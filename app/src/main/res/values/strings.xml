@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Life Services Assistant</string>
+    <style name="buttonTheme">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">@drawable/text_bg</item>
+    </style>
+</resources>

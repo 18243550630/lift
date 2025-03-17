@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="true" />
+
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <application
+        android:name=".SunnyWeatherApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".WeatherForecastActivity"/>
+        <activity android:name=".logic.WeatherActivity"/>
+        <activity android:name=".HealthyFeetActivity"/>
+        <activity android:name=".HealthyActivity"/>
+<activity android:name=".BodyInfoActivity"/>
+        <activity android:name=".DietRecommendationActivity"/>
+        <activity android:name=".TimerActivity"/>
+
+        <activity android:name=".ui.theme.otro.ConterActivity"/>
+        <activity android:name=".ui.theme.otro.DateActivity"/>
+        <activity android:name=".ui.theme.otro.ScoreboardActivity"/>
+        <activity android:name=".ui.theme.otro.ColorConverterActivity"/>
+        <activity android:name=".ui.theme.otro.RandomNumberActivity"/>
+        <activity android:name=".ui.theme.otro.LoginActivity"/>
+<activity android:name=".RecordActivity"/>
+        <activity android:name=".ui.theme.jizhangnew.DetailsActivity"/>
+        <activity android:name=".ui.theme.data.DataActivity"/>
+
+    </application>
+
+</manifest>
