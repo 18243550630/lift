@@ -19,6 +19,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.Alignment
 import com.example.lifeservicesassistant.R
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -26,6 +27,7 @@ import androidx.room.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -42,34 +44,56 @@ fun DetailsScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var transactions by remember { mutableStateOf<List<Transaction>>(emptyList()) }
     val groupedTransactions = transactions.groupBy { it.date }
+    val backStackEntry by navController.currentBackStackEntryAsState()
     // 从数据库加载数据
-    LaunchedEffect(Unit) {
+    LaunchedEffect(backStackEntry) {
         CoroutineScope(Dispatchers.IO).launch {
-            transactions = transactionDao.getAllTransactions().sortedByDescending { LocalDate.parse(it.date) } // 按日期排序
+            // 从数据库加载最新数据（包含任何新增/修改的记录）
+            val latestData = transactionDao.getAllTransactions()
+                .sortedByDescending { LocalDate.parse(it.date) }
+
+            // 切换到主线程更新界面
+            withContext(Dispatchers.Main) {
+                transactions = latestData
+            }
         }
     }
 
     // 根据搜索框筛选账单数据
-    val filteredTransactions = transactions.filter {
-        it.category.contains(searchQuery, ignoreCase = true)
+    val filteredTransactions = remember(searchQuery, transactions) {
+        transactions.filter {
+            it.category.contains(searchQuery, ignoreCase = true) ||
+                    it.remark.contains(searchQuery, ignoreCase = true) ||
+                    "%.2f".format(it.amount).contains(searchQuery)
+        }
     }
 
+    val groupedEntries by remember(filteredTransactions) {
+        derivedStateOf {
+            filteredTransactions
+                .groupBy { it.date }
+                .toList()
+                .sortedByDescending { (dateStr, _) ->
+                    LocalDate.parse(dateStr)
+                }
+        }
+    }
     Scaffold(
         topBar = {
-            // 搜索栏
             TopAppBar(
                 title = {
                     TextField(
                         value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        label = { Text("搜索") },
-                        modifier = Modifier.fillMaxWidth()
+                        onValueChange = { searchQuery = it }, // 输入时实时更新状态
+                        label = { Text("支持分类/备注/金额搜索") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        )
                     )
                 },
                 actions = {
-                    // 新建按钮
                     IconButton(onClick = {
-                        // 点击“新建”返回到记录界面
                         navController.navigate("record_screen")
                     }) {
                         Text("新建")
@@ -80,33 +104,47 @@ fun DetailsScreen(navController: NavController) {
         content = { padding ->
             // 使用 LazyColumn 包裹所有内容，使得所有内容都可以滑动
             LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
-                // 遍历按日期分组的账单数据
-                groupedTransactions.forEach { (date, transactionsForDate) ->
+                if (groupedEntries.isEmpty()) {
                     item {
-                        if (transactionsForDate.isNotEmpty()) {
-                            // 显示日期标题
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("没有找到匹配的账单记录")
+                        }
+                    }
+                }else {
+                    groupedEntries.forEach { (date, transactionsForDate) ->
+                        item {
                             Text(
                                 text = "日期: $date",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(16.dp)
                             )
                         }
-                    }
-
-                    // 展示对应日期的账单列表
-                    items(transactionsForDate) { transaction ->
-                        BillCard(transaction = transaction, onEditClicked = {
-                            // 点击编辑，进入编辑页面
-                            navController.navigate("edit_bill_screen/${transaction.id}")
-                        })
+                        items(
+                            items = transactionsForDate,
+                            key = { it.id } // 为每个账单项设置唯一键
+                        ) { transaction ->
+                            BillCard(
+                                transaction = transaction,
+                                onEditClicked = {
+                                    navController.navigate(
+                                        "edit_bill_screen/${transaction.id}"
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
+
             }
         }
     )
 }
-
-@Composable
+                @Composable
 fun BillCard(transaction: Transaction, onEditClicked: () -> Unit) {
     // 每个账单项显示为卡片布局
     Card(

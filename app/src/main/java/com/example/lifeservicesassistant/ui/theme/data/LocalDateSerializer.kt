@@ -29,14 +29,17 @@ class LocalDateDeserializer : JsonDeserializer<LocalDate> {
 // Event的序列化和反序列化
 class EventSerializer : JsonSerializer<Event> {
     override fun serialize(src: Event?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
-        val jsonObject = JsonObject()
-        jsonObject.addProperty("title", src?.title)
-        jsonObject.addProperty("startDate", src?.startDate.toString())
-        jsonObject.addProperty("startTime", src?.startTime.toString())
-        jsonObject.addProperty("endDate", src?.endDate.toString())
-        jsonObject.addProperty("endTime", src?.endTime.toString())
-        jsonObject.addProperty("note", src?.note)
-        jsonObject.addProperty("isReminderEnabled", src?.isReminderEnabled)
+        val jsonObject = JsonObject().apply {
+            addProperty("id", src?.id)
+            addProperty("title", src?.title)
+            addProperty("startDate", src?.startDate.toString())
+            addProperty("startTime", src?.startTime.toString())
+            addProperty("endDate", src?.endDate.toString())
+            addProperty("endTime", src?.endTime.toString())
+            addProperty("note", src?.note)
+            addProperty("isReminderEnabled", src?.isReminderEnabled)
+            addProperty("isAlarmEnabled", src?.isAlarmEnabled)
+        }
         return jsonObject
     }
 }
@@ -44,15 +47,16 @@ class EventSerializer : JsonSerializer<Event> {
 class EventDeserializer : JsonDeserializer<Event> {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Event {
         val jsonObject = json?.asJsonObject
-        val title = jsonObject?.get("title")?.asString ?: ""
-        val startDate = LocalDate.parse(jsonObject?.get("startDate")?.asString ?: "")
-        val startTime = LocalTime.parse(jsonObject?.get("startTime")?.asString ?: "00:00")
-        val endDate = LocalDate.parse(jsonObject?.get("endDate")?.asString ?: "")
-        val endTime = LocalTime.parse(jsonObject?.get("endTime")?.asString ?: "00:00")
-        val note = jsonObject?.get("note")?.asString ?: ""
-        val isReminderEnabled = jsonObject?.get("isReminderEnabled")?.asBoolean ?: false
-        val isAlarmEnabled = jsonObject?.get("isReminderEnabled")?.asBoolean ?: false
-        return Event(title, startDate, startTime, endDate, endTime, note, isReminderEnabled,isAlarmEnabled)
+        return Event(
+            id = jsonObject?.get("id")?.asLong ?: 0,
+            title = jsonObject?.get("title")?.asString ?: "",
+            startDate = LocalDate.parse(jsonObject?.get("startDate")?.asString),
+            startTime = LocalTime.parse(jsonObject?.get("startTime")?.asString),
+            endDate = LocalDate.parse(jsonObject?.get("endDate")?.asString),
+            endTime = LocalTime.parse(jsonObject?.get("endTime")?.asString),
+            note = jsonObject?.get("note")?.asString ?: "",
+            isReminderEnabled = jsonObject?.get("isReminderEnabled")?.asBoolean ?: false,
+            isAlarmEnabled = jsonObject?.get("isAlarmEnabled")?.asBoolean ?: false
+        )
     }
 }
-

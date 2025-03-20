@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -63,24 +65,39 @@ import java.util.Locale
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen() {
-    val context = LocalContext.current // 获取 Context
-    val viewModel: CalendarViewModel = remember { CalendarViewModel(context) } // 通过 remember 创建 ViewModel 实例
+fun CalendarScreen(navController: NavController) {
+    val context = LocalContext.current
+    val viewModel: CalendarViewModel = remember { CalendarViewModel(context) }
     val pagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2)
     val currentMonth = LocalDate.now().plusMonths((pagerState.currentPage - Int.MAX_VALUE / 2).toLong())
+
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var currentEvent by remember { mutableStateOf<Event?>(null) }
 
-    // 获取当前月的事件
-    val events = viewModel.getEvents(currentMonth)
-    var eventsList by remember { mutableStateOf(events.values.toList()) }
+    // 获取当前月的事件（支持多事件）
+    val events by remember(currentMonth) {
+        derivedStateOf { viewModel.getEvents(currentMonth) }
+    }
 
-    // 获取当前选中日期的事件
-    val filteredEvents = if (selectedDate != null) {
-        eventsList.filter { it.startDate == selectedDate }
-    } else {
-        eventsList
+    // 展开所有事件并按时间排序
+    val allEvents by remember(events) {
+        derivedStateOf {
+            events.values.flatten()
+                .sortedWith(
+                    compareByDescending<Event> { it.startDate }
+                        .thenBy { it.startTime }
+                )
+        }
+    }
+
+    // 筛选选中日期的事件
+    val filteredEvents by remember(selectedDate, allEvents) {
+        derivedStateOf {
+            selectedDate?.let { date ->
+                allEvents.filter { it.startDate == date }
+            } ?: allEvents
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -98,7 +115,6 @@ fun CalendarScreen() {
                         month = month,
                         events = events,
                         onDateClick = { date ->
-                            // 判断点击的日期是否是已经选中的日期
                             selectedDate = if (date == selectedDate) null else date
                         },
                         selectedDate = selectedDate
@@ -106,62 +122,51 @@ fun CalendarScreen() {
                 }
             }
 
-            Text("事件列表", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
-
-            // 按照 selectedDate 来过滤事件
-            val (futureEvents, pastEvents) = remember(filteredEvents) {
-                filteredEvents.sortedBy { it.startDate }
-                    .partition { !it.startDate.isBefore(LocalDate.now()) }
-            }
+            Text(
+                "事件列表",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(16.dp)
+            )
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(futureEvents) { event ->
-                    EventCard(
-                        event = event,
-                        onDelete = {
-                            viewModel.deleteEvent(event)
-                            eventsList = viewModel.getEvents(currentMonth).values.toList()
-                        },
-                        onEdit = {
-                            currentEvent = event
-                            showDialog = true
-                        }
-                    )
+                if (filteredEvents.isEmpty()) {
+                    item {
+                        Text(
+                            "没有找到事件",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
-                items(pastEvents) { event ->
+
+                items(
+                    items = filteredEvents,
+                    key = { event -> event.id }
+                ) { event ->
                     EventCard(
                         event = event,
-                        onDelete = {
-                            viewModel.deleteEvent(event)
-                            eventsList = viewModel.getEvents(currentMonth).values.toList()
-                        },
+                        onDelete = { viewModel.deleteEvent(event) },
                         onEdit = {
                             currentEvent = event
                             showDialog = true
                         },
-                        isPast = true
+                        isPast = event.startDate.isBefore(LocalDate.now())
                     )
                 }
             }
         }
 
+        // 添加事件按钮（修正位置）
         FloatingActionButton(
             onClick = {
                 showDialog = true
-                currentEvent = Event(
-                    title = "",
-                    startDate = selectedDate ?: LocalDate.now(),
-                    startTime = LocalTime.now(),
-                    endDate = selectedDate ?: LocalDate.now(),
-                    endTime = LocalTime.now(),
-                    note = "",
-                    isReminderEnabled = false,
-                    isAlarmEnabled = false
-                )
+                currentEvent = null
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp) // 添加间距
         ) {
             Text("+", style = MaterialTheme.typography.titleLarge)
         }
@@ -169,10 +174,16 @@ fun CalendarScreen() {
         if (showDialog) {
             EventEditDialog(
                 event = currentEvent,
+                selectedDate = selectedDate, // 传递选中日期
                 onDismiss = { showDialog = false },
-                onSave = { event ->
-                    viewModel.updateEvent(event)
-                    eventsList = viewModel.getEvents(currentMonth).values.toList()
+                onSave = { updatedEvent ->
+                    if (currentEvent == null) {
+                        viewModel.saveEvent(updatedEvent)
+                    } else {
+                        viewModel.updateEvent(updatedEvent)
+                    }
+                    // 强制刷新数据
+                    //events = viewModel.getEvents(currentMonth)
                     showDialog = false
                 }
             )
@@ -180,22 +191,10 @@ fun CalendarScreen() {
     }
 }
 
-
-
-@Composable
-fun WeekdayHeader() {
-    val weekdays = listOf("日", "一", "二", "三", "四", "五", "六")
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-        weekdays.forEach { day ->
-            Text(text = day, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(8.dp))
-        }
-    }
-}
-
 @Composable
 fun AnimatedCalendarMonthView(
     month: LocalDate,
-    events: Map<LocalDate, Event>,
+    events: Map<LocalDate, List<Event>>,
     onDateClick: (LocalDate) -> Unit,
     selectedDate: LocalDate?
 ) {
@@ -215,15 +214,12 @@ fun AnimatedCalendarMonthView(
     }
 }
 
-
-
-
 @Composable
 fun CalendarMonthView(
     month: LocalDate,
-    events: Map<LocalDate, Event>,
+    events: Map<LocalDate, List<Event>>,
     onDateClick: (LocalDate) -> Unit,
-    selectedDate: LocalDate? // 添加 selectedDate 作为参数
+    selectedDate: LocalDate?
 ) {
     val daysInMonth = month.lengthOfMonth()
     val firstDay = month.withDayOfMonth(1)
@@ -239,10 +235,10 @@ fun CalendarMonthView(
             val date = firstDay.plusDays(day.toLong())
             CalendarDayCell(
                 date = date,
-                event = events[date],
+                eventCount = events[date]?.size ?: 0, // 显示事件数量
                 onClick = { onDateClick(date) },
-                isSelected = date == selectedDate, // 比较是否为选中的日期
-                isEventDate = events.containsKey(date) // 判断该日期是否有事件
+                isSelected = date == selectedDate,
+                hasEvents = events.containsKey(date)
             )
         }
     }
@@ -251,61 +247,153 @@ fun CalendarMonthView(
 @Composable
 fun CalendarDayCell(
     date: LocalDate,
-    event: Event?,
+    eventCount: Int,
     onClick: () -> Unit,
     isSelected: Boolean,
-    isEventDate: Boolean // 添加是否有事件的标记
+    hasEvents: Boolean
 ) {
     val isToday = date == LocalDate.now()
 
     Box(
         modifier = Modifier
             .aspectRatio(1f)
-            .clickable { onClick() }  // 点击时触发回调
+            .clickable(onClick = onClick)
             .padding(4.dp)
             .background(
-                if (isSelected) Color.Gray else Color.Transparent, // 如果是选中的日期，背景变灰
+                color = when {
+                    isSelected -> Color.LightGray
+                    isToday -> Color.Blue.copy(alpha = 0.3f)
+                    else -> Color.Transparent
+                },
                 shape = CircleShape
             ),
-        contentAlignment = Alignment.Center // 使用 Alignment.Center 来居中
+        contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(
-                        when {
-                            isToday -> Color.Blue
-                            isEventDate -> Color.Green // 只有有事件的日期才会标记
-                            else -> Color.Transparent
-                        }
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+            Text(
+                text = date.dayOfMonth.toString(),
+                color = when {
+                    isToday -> Color.White
+                    isSelected -> Color.DarkGray
+                    else -> Color.Black
+                },
+                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
+            )
+
+            // 显示事件数量
+            if (eventCount > 0) {
                 Text(
-                    text = date.dayOfMonth.toString(),
-                    color = if (isToday) Color.White else Color.Black,
-                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
+                    text = "$eventCount 事件",
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.primary
                 )
-            }
-            event?.let {
-                Text(text = it.title, fontSize = 10.sp)
             }
         }
     }
 }
 
 @Composable
+fun EventCard(
+    event: Event,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
+    isPast: Boolean
+) {
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = when {
+                isPast -> MaterialTheme.colorScheme.surfaceVariant
+                else -> MaterialTheme.colorScheme.surface
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = event.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1
+                )
+
+                Text(
+                    text = "${event.startDate} ${event.startTime.format(timeFormatter)} - " +
+                            "${event.endTime.format(timeFormatter)}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                if (event.note.isNotBlank()) {
+                    Text(
+                        text = event.note,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (event.isReminderEnabled) {
+                        Text(
+                            "⏰ 已设置提醒",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "删除")
+            }
+        }
+    }
+}
+
+@Composable
+fun WeekdayHeader() {
+    val weekdays = listOf("日", "一", "二", "三", "四", "五", "六")
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+        weekdays.forEach { day ->
+            Text(
+                text = day,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
 fun EventEditDialog(
     event: Event?,
+    selectedDate: LocalDate?, // 新增参数
     onDismiss: () -> Unit,
     onSave: (Event) -> Unit
 ) {
+    val initialId = remember { if (event == null) System.currentTimeMillis() else event.id }
+    var id by remember { mutableStateOf(initialId) }
+
+    // 使用选中日期作为默认值
+    var startDate by remember {
+        mutableStateOf(event?.startDate ?: selectedDate ?: LocalDate.now())
+    }
+    var endDate by remember {
+        mutableStateOf(event?.endDate ?: selectedDate ?: LocalDate.now())
+    }
+
     var title by remember { mutableStateOf(event?.title ?: "") }
-    var startDate by remember { mutableStateOf(event?.startDate ?: LocalDate.now()) }
     var startTime by remember { mutableStateOf(event?.startTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "00:00") }
-    var endDate by remember { mutableStateOf(event?.endDate ?: LocalDate.now()) }
     var endTime by remember { mutableStateOf(event?.endTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "00:00") }
     var note by remember { mutableStateOf(event?.note ?: "") }
     var isReminderEnabled by remember { mutableStateOf(event?.isReminderEnabled ?: false) }
@@ -316,25 +404,34 @@ fun EventEditDialog(
         title = { Text("编辑事件") },
         text = {
             Column {
-                // 标题
                 TextField(value = title, onValueChange = { title = it }, label = { Text("事件标题") })
 
-                // 开始日期选择
-                DatePickerField(value = startDate, onValueChange = { startDate = it }, label = "开始日期")
+                DatePickerField(
+                    value = startDate,
+                    onValueChange = { startDate = it },
+                    label = "开始日期"
+                )
 
-                // 开始时间选择
-                TimePickerField(time = startTime, onTimeChange = { startTime = it }, label = "开始时间")
+                TimePickerField(
+                    time = startTime,
+                    onTimeChange = { startTime = it },
+                    label = "开始时间"
+                )
 
-                // 结束日期选择
-                DatePickerField(value = endDate, onValueChange = { endDate = it }, label = "结束日期")
+                DatePickerField(
+                    value = endDate,
+                    onValueChange = { endDate = it },
+                    label = "结束日期"
+                )
 
-                // 结束时间选择
-                TimePickerField(time = endTime, onTimeChange = { endTime = it }, label = "结束时间")
+                TimePickerField(
+                    time = endTime,
+                    onTimeChange = { endTime = it },
+                    label = "结束时间"
+                )
 
-                // 备注
                 TextField(value = note, onValueChange = { note = it }, label = { Text("备注") })
 
-                // 提醒选择
                 Row {
                     Text("提醒", modifier = Modifier.align(Alignment.CenterVertically))
                     Checkbox(
@@ -343,7 +440,6 @@ fun EventEditDialog(
                     )
                 }
 
-                // 闹钟提醒选择
                 Row {
                     Text("闹钟提醒", modifier = Modifier.align(Alignment.CenterVertically))
                     Checkbox(
@@ -355,14 +451,28 @@ fun EventEditDialog(
         },
         confirmButton = {
             Button(onClick = {
-                // 将时间字符串转换为 LocalTime 类型
-                val startLocalTime = LocalTime.parse(startTime)
-                val endLocalTime = LocalTime.parse(endTime)
+                try {
+                    // 确保时间格式始终为两位数（HH:mm）
+                    val formattedStartTime = if (startTime.length == 4) "0$startTime" else startTime
+                    val formattedEndTime = if (endTime.length == 4) "0$endTime" else endTime
 
-                // 创建新的事件，保存闹钟提醒状态
-                val newEvent = Event(title, startDate, startLocalTime, endDate, endLocalTime, note, isReminderEnabled, isAlarmEnabled)
-                onSave(newEvent)
-                onDismiss()
+                    val newEvent = Event(
+                        id = id,
+                        title = title,
+                        startDate = startDate,
+                        startTime = LocalTime.parse(formattedStartTime, DateTimeFormatter.ofPattern("HH:mm")),
+                        endDate = endDate,
+                        endTime = LocalTime.parse(formattedEndTime, DateTimeFormatter.ofPattern("HH:mm")),
+                        note = note,
+                        isReminderEnabled = isReminderEnabled,
+                        isAlarmEnabled = isAlarmEnabled
+                    )
+
+                    onSave(newEvent)
+                    onDismiss()
+                } catch (e: Exception) {
+                    println("时间格式错误: ${e.message}")
+                }
             }) {
                 Text("保存")
             }
@@ -374,9 +484,6 @@ fun EventEditDialog(
         }
     )
 }
-
-
-
 
 
 @Composable
@@ -426,7 +533,9 @@ fun TimePickerField(
                     selectedHour = newHour.toIntOrNull()?.coerceIn(0, 23)
                 }
                 // 更新时间
-                onTimeChange("${selectedHour ?: ""}:${selectedMinute ?: ""}")
+                onTimeChange(
+                    "%02d:%02d".format(selectedHour ?: 0, selectedMinute ?: 0)
+                )
             },
             label = { Text("小时") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -445,7 +554,9 @@ fun TimePickerField(
                     selectedMinute = newMinute.toIntOrNull()?.coerceIn(0, 59)
                 }
                 // 更新时间
-                onTimeChange("${selectedHour ?: ""}:${selectedMinute ?: ""}")
+                onTimeChange(
+                    "%02d:%02d".format(selectedHour ?: 0, selectedMinute ?: 0)
+                )
             },
             label = { Text("分钟") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -455,45 +566,3 @@ fun TimePickerField(
 }
 
 
-
-@Composable
-fun EventCard(
-    event: Event,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit,
-    isPast: Boolean = false
-) {
-    val isUpcoming = event.startDate >= LocalDate.now() // 判断是否为未完成事件
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isPast) MaterialTheme.colorScheme.surfaceVariant
-            else if (isUpcoming) Color(0xFFD3F9D8) // 浅绿色背景
-            else MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Row(
-            Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(event.title, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    "${event.startDate} ${event.startTime} - ${event.endTime}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                if (event.note.isNotBlank()) {
-                    Text(event.note, style = MaterialTheme.typography.bodySmall)
-                }
-            }
-            IconButton(onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "删除")
-            }
-        }
-    }
-}

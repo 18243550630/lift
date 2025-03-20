@@ -9,8 +9,6 @@ import com.example.lifeservicesassistant.SunnyWeatherApplication.Companion.conte
 import com.example.lifeservicesassistant.ui.theme.data.Event
 import com.example.lifeservicesassistant.ui.theme.data.EventDeserializer
 import com.example.lifeservicesassistant.ui.theme.data.EventSerializer
-import com.example.lifeservicesassistant.ui.theme.data.LocalDateDeserializer
-import com.example.lifeservicesassistant.ui.theme.data.LocalDateSerializer
 import com.example.lifeservicesassistant.ui.theme.data.NotificationReceiver
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -19,7 +17,8 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-
+import com.example.lifeservicesassistant.ui.theme.data.LocalDateDeserializer
+import com.example.lifeservicesassistant.ui.theme.data.LocalDateSerializer
 class CalendarViewModel(context: Context) : ViewModel() {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("calendar_events", Context.MODE_PRIVATE)
@@ -30,112 +29,146 @@ class CalendarViewModel(context: Context) : ViewModel() {
         .registerTypeAdapter(Event::class.java, EventDeserializer())
         .create()
 
-    // 使用 Map<LocalDate, MutableList<Event>> 存储每个日期的多个事件
+    // 修改为 Map<LocalDate, MutableList<Event>> 支持多事件
     private val _events = mutableStateOf<Map<LocalDate, MutableList<Event>>>(emptyMap())
-    init {
-        loadEvents()  // 初始化时加载事件
-    }
 
-    // 从 SharedPreferences 中加载事件
+    init {
+        loadEvents()
+    }
+    // CalendarViewModel.kt
+/*    fun clearAllEvents() {
+        // 1. 清空内存中的事件数据，并确保 Compose 重新渲染
+        _events.value = mutableMapOf()
+
+        // 2. 清空本地存储数据
+        sharedPreferences.edit().remove("events").apply()
+
+    }*/
+
     private fun loadEvents() {
         val eventsJson = sharedPreferences.getString("events", null)
-        if (eventsJson != null) {
-            try {
-                val type: Type = object : TypeToken<Map<LocalDate, MutableList<Event>>>() {}.type
-                val events: Map<LocalDate, MutableList<Event>> = gson.fromJson(eventsJson, type)
-                _events.value = events
-            } catch (e: JsonSyntaxException) {
-                e.printStackTrace()
-                sharedPreferences.edit().remove("events").apply()  // 如果解析失败，清空数据
+        try {
+            val type = object : TypeToken<Map<LocalDate, MutableList<Event>>>() {}.type
+            val loadedEvents: Map<LocalDate, MutableList<Event>> = gson.fromJson(eventsJson, type)
+
+            // 确保每个事件的 ID 唯一
+            _events.value = loadedEvents.mapValues { entry ->
+                entry.value.map { event ->
+                    if (event.id == 0L) event.copy(id = System.currentTimeMillis() + System.nanoTime())
+                    else event
+                }.toMutableList()
             }
+            _events.value = HashMap(_events.value)
+
+        } catch (e: Exception) {
+            _events.value = mutableMapOf()
         }
     }
 
-    // 保存事件
+
+/*
     fun saveEvent(event: Event) {
         _events.value = _events.value.toMutableMap().apply {
-            // 获取该日期已有的事件列表，没有则创建新列表
-            val eventsForDate = getOrDefault(event.startDate, mutableListOf())
-            eventsForDate.add(event) // 添加到列表
-            put(event.startDate, eventsForDate) // 更新映射
+            val eventsForDate = getOrDefault(event.startDate, mutableListOf()).apply {
+                add(event.copy(id = System.currentTimeMillis())) // 生成唯一ID
+            }
+            put(event.startDate, eventsForDate.sortedBy { it.startTime }.toMutableList())
         }
         saveEvents()
-        // 如果启用了提醒和闹钟提醒，设置闹钟
-        if (event.isReminderEnabled && event.isAlarmEnabled) {
-            setAlarm(event, context)
-        }
+        setAlarmIfNeeded(event, context)
+    }
+*/
+// CalendarViewModel.kt
+fun saveEvent(event: Event) {
+    val finalEvent = if (event.id == 0L) {
+        event.copy(id = System.currentTimeMillis())
+    } else {
+        event
     }
 
-    // 设置闹钟提醒
-    private fun setAlarm(event: Event, context: Context) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, NotificationReceiver::class.java)
-        intent.putExtra("event_title", event.title)  // 传递事件标题作为通知内容
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
+    _events.value = _events.value.toMutableMap().apply {
+        val eventsForDate = getOrDefault(finalEvent.startDate, mutableListOf())
+        eventsForDate.add(finalEvent)
+        put(finalEvent.startDate, eventsForDate.sortedBy { it.startTime }.toMutableList())
+    }
+    saveEvents()
+}
 
-        // 计算开始时间前5分钟
-        val reminderTime = event.startDate.atTime(event.startTime).minus(5, ChronoUnit.MINUTES)
-
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            reminderTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            pendingIntent
-        )
+    fun getEvents(month: LocalDate): Map<LocalDate, List<Event>> {
+        return _events.value
+            .filterKeys { it.month == month.month && it.year == month.year }
+            .mapValues { it.value.sortedBy { event -> event.startTime } }
     }
 
-    // 保存所有事件到 SharedPreferences
-    private fun saveEvents() {
-        try {
-            val eventsJson = gson.toJson(_events.value)
-            sharedPreferences.edit().putString("events", eventsJson).apply()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    // 获取指定月份的事件
-    fun getEvents(month: LocalDate): Map<LocalDate, Event> {
-        return _events.value.filter { it.key.month == month.month && it.key.year == month.year }
-            .flatMap { entry ->
-                entry.value.map { event -> entry.key to event }
-            }
-            .toMap()
-    }
-
-    // 更新事件
-    fun updateEvent(event: Event) {
+    fun updateEvent(updatedEvent: Event) {
         _events.value = _events.value.toMutableMap().apply {
-            val eventsForDate = getOrDefault(event.startDate, mutableListOf())
-            val index = eventsForDate.indexOfFirst { it.startTime == event.startTime }
-            if (index >= 0) {
-                eventsForDate[index] = event // 如果已有相同时间的事件，替换它
-            } else {
-                eventsForDate.add(event) // 如果没有找到相同时间的事件，添加新的事件
+            val eventsForDate = getOrDefault(updatedEvent.startDate, mutableListOf())
+            val index = eventsForDate.indexOfFirst { it.id == updatedEvent.id }
+            if (index != -1) {
+                eventsForDate[index] = updatedEvent
+                put(updatedEvent.startDate, eventsForDate.sortedBy { it.startTime }.toMutableList())
             }
-            put(event.startDate, eventsForDate)
         }
-        saveEvents() // 更新后保存
+        saveEvents()
+        setAlarmIfNeeded(updatedEvent, context)
     }
 
-    // 删除事件
     fun deleteEvent(event: Event) {
         _events.value = _events.value.toMutableMap().apply {
             val eventsForDate = get(event.startDate)
-            eventsForDate?.remove(event)  // 从同一天的事件列表中删除该事件
+            eventsForDate?.removeAll { it.id == event.id }
             if (eventsForDate.isNullOrEmpty()) {
-                remove(event.startDate) // 如果该日期下没有事件了，移除日期键
+                remove(event.startDate)
             } else {
                 put(event.startDate, eventsForDate)
             }
         }
-        saveEvents() // 删除后保存
+        saveEvents()
+        cancelAlarm(event, context)
+    }
+
+    private fun saveEvents() {
+        sharedPreferences.edit().putString("events", gson.toJson(_events.value)).apply()
+    }
+
+    private fun setAlarmIfNeeded(event: Event, context: Context) {
+        if (event.isReminderEnabled && event.isAlarmEnabled) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context, NotificationReceiver::class.java).apply {
+                putExtra("event_id", event.id)
+                putExtra("event_title", event.title)
+            }
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                event.id.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val triggerAtMillis = event.startDate.atTime(event.startTime)
+                .minus(5, ChronoUnit.MINUTES)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
+                triggerAtMillis,
+                pendingIntent
+            )
+        }
+    }
+
+    private fun cancelAlarm(event: Event, context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            event.id.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager.cancel(pendingIntent)
     }
 }
-
-
 
