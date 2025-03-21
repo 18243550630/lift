@@ -25,5 +25,8 @@ fun NoteApp() {
             val noteId = backStackEntry.arguments?.getString("noteId")?.toLongOrNull()
             EditNoteScreen(noteId, viewModel, navController)
         }
+        composable("category_management") {
+            CategoryManagementScreen(viewModel, navController)
+        }
     }
 }

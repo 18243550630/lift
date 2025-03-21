@@ -9,5 +9,6 @@ data class Note(
     var title: String,
     var content: String,
     val createdTime: Long = System.currentTimeMillis(),
-    var updatedTime: Long = System.currentTimeMillis()
+    var updatedTime: Long = System.currentTimeMillis(),
+    val category: String? = null // 允许分类为空
 )
