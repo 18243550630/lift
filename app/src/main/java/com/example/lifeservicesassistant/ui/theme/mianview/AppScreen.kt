@@ -30,6 +30,7 @@ import com.example.lifeservicesassistant.TimerActivity
 import com.example.lifeservicesassistant.WeatherForecastActivity
 import com.example.lifeservicesassistant.RecordActivity
 import com.example.lifeservicesassistant.ui.theme.data.DataActivity
+import com.example.lifeservicesassistant.ui.theme.note.NoteActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ColorConverterActivity
 import com.example.lifeservicesassistant.ui.theme.otro.DateActivity
 import com.example.lifeservicesassistant.ui.theme.otro.LoginActivity
@@ -171,7 +172,7 @@ fun AppScreen() {
                         WeatherForecastActivity::class.java,
                         HealthyActivity::class.java,
                         RecordActivity::class.java,
-                        WeatherForecastActivity::class.java,
+                        NoteActivity::class.java,
                         WeatherForecastActivity::class.java,
                         DataActivity::class.java
                     )
