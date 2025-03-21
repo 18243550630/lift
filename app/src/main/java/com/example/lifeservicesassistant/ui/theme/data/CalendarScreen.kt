@@ -75,6 +75,8 @@ fun CalendarScreen(navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     var currentEvent by remember { mutableStateOf<Event?>(null) }
 
+    var refreshFlag by remember { mutableStateOf(0) }
+
     // 获取当前月的事件（支持多事件）
     val events by remember(currentMonth) {
         derivedStateOf { viewModel.getEvents(currentMonth) }
@@ -143,11 +145,14 @@ fun CalendarScreen(navController: NavController) {
 
                 items(
                     items = filteredEvents,
-                    key = { event -> event.id }
+                    key = { event -> "${event.id}-$refreshFlag" }
                 ) { event ->
                     EventCard(
                         event = event,
-                        onDelete = { viewModel.deleteEvent(event) },
+                        onDelete = {
+                            viewModel.deleteEvent(event)
+                            refreshFlag++ // 触发列表刷新
+                        },
                         onEdit = {
                             currentEvent = event
                             showDialog = true

@@ -113,20 +113,27 @@ fun saveEvent(event: Event) {
         setAlarmIfNeeded(updatedEvent, context)
     }
 
+    // CalendarViewModel.kt
     fun deleteEvent(event: Event) {
-        _events.value = _events.value.toMutableMap().apply {
-            val eventsForDate = get(event.startDate)
-            eventsForDate?.removeAll { it.id == event.id }
-            if (eventsForDate.isNullOrEmpty()) {
-                remove(event.startDate)
-            } else {
-                put(event.startDate, eventsForDate)
-            }
-        }
-        saveEvents()
-        cancelAlarm(event, context)
-    }
+        // 创建防御性拷贝确保触发状态更新
+        val newEvents = _events.value.toMutableMap()
 
+        newEvents[event.startDate]?.let { eventsForDate ->
+            // 过滤出需要保留的事件
+            val updatedList = eventsForDate.filterNot { it.id == event.id }.toMutableList()
+
+            if (updatedList.isEmpty()) {
+                newEvents.remove(event.startDate) // 移除空日期
+            } else {
+                newEvents[event.startDate] = updatedList
+            }
+
+            // 更新状态（必须赋值新对象）
+            _events.value = newEvents
+            saveEvents()
+            cancelAlarm(event, context)
+        }
+    }
     private fun saveEvents() {
         sharedPreferences.edit().putString("events", gson.toJson(_events.value)).apply()
     }
@@ -142,7 +149,7 @@ fun saveEvent(event: Event) {
                 context,
                 event.id.hashCode(),
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             val triggerAtMillis = event.startDate.atTime(event.startTime)
@@ -166,7 +173,7 @@ fun saveEvent(event: Event) {
             context,
             event.id.hashCode(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
     }
