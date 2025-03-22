@@ -47,6 +47,7 @@
         <activity android:name=".ui.theme.jizhangnew.DetailsActivity"/>
         <activity android:name=".ui.theme.data.DataActivity"/>
         <activity android:name=".ui.theme.note.NoteActivity"/>
+        <activity android:name=".ui.theme.event.EventListActivity"/>
 
 
 
