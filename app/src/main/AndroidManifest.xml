@@ -48,6 +48,8 @@
         <activity android:name=".ui.theme.data.DataActivity"/>
         <activity android:name=".ui.theme.note.NoteActivity"/>
         <activity android:name=".ui.theme.event.EventListActivity"/>
+        <activity android:name=".ui.theme.password.PasswordManagementActivity"/>
+        <activity android:name=".ui.theme.mima.PasswordActivity"/>
 
 
 

@@ -37,6 +37,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.DateActivity
 import com.example.lifeservicesassistant.ui.theme.otro.LoginActivity
 import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
+import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
 
 /*@OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -174,7 +175,7 @@ fun AppScreen() {
                         HealthyActivity::class.java,
                         RecordActivity::class.java,
                         NoteActivity::class.java,
-                        EventListActivity::class.java,
+                        PasswordManagementActivity::class.java,
                         DataActivity::class.java
                     )
                 } else {
