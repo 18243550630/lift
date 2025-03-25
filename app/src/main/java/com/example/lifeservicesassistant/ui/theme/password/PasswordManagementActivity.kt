@@ -1,6 +1,7 @@
 package com.example.lifeservicesassistant.ui.theme.password
 
 import LifeServicesAssistantTheme
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -20,30 +23,50 @@ import com.example.lifeservicesassistant.ui.theme.password.PasswordListScreen
 import com.example.lifeservicesassistant.ui.theme.password.PasswordViewModel
 import com.example.lifeservicesassistant.ui.theme.password.PasswordBookDetailScreen
 
+// PasswordManagementActivity.kt
 class PasswordManagementActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LifeServicesAssistantTheme {
-                // Surface 是一个常用的 Composable，用来作为内容的背景
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    // 获取 NavController
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     val navController = rememberNavController()
-
-                    // 设置 NavHost
-                    PasswordManagementNavigation(navController = navController)
+                    val viewModel: PasswordViewModel = viewModel(
+                        factory = PasswordViewModelFactory(application)
+                    )
+                    PasswordManagementNavigation(navController, viewModel)
                 }
             }
         }
     }
 }
 
-@Composable
-fun PasswordManagementNavigation(navController: NavHostController) {
-    val viewModel: PasswordViewModel = viewModel()
+// PasswordViewModelFactory.kt
+class PasswordViewModelFactory(
+    private val application: Application
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(PasswordViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return PasswordViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 
-    NavHost(navController = navController, startDestination = "password_list") {
+// PasswordManagementNavigation.kt
+@Composable
+fun PasswordManagementNavigation(
+    navController: NavHostController,
+    viewModel: PasswordViewModel
+) {
+    NavHost(
+        navController = navController,
+        startDestination = "password_list"
+    ) {
         composable("password_list") {
             PasswordListScreen(viewModel = viewModel, navController = navController)
         }
@@ -52,7 +75,12 @@ fun PasswordManagementNavigation(navController: NavHostController) {
         }
         composable("password_details/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")?.toLongOrNull() ?: 0L
-            PasswordBookDetailScreen(viewModel = viewModel, bookId = bookId, navController = navController)
+            viewModel.loadBookItems(bookId)
+            PasswordBookDetailScreen(
+                viewModel = viewModel,
+                bookId = bookId,
+                navController = navController
+            )
         }
     }
 }

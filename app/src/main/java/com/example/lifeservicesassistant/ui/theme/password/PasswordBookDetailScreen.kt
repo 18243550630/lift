@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,38 +29,50 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordBookDetailScreen(viewModel: PasswordViewModel, bookId: Long, navController: NavController) {
-    val book = viewModel.passwordBooks.find { it.id == bookId }
+fun PasswordBookDetailScreen(
+    viewModel: PasswordViewModel,
+    bookId: Long,
+    navController: NavController
+) {
+    // 从ViewModel获取当前密码项列表
+    val currentItems by viewModel.currentBookItemsState
+
+    // 本地状态管理
     var newPasswordTitle by remember { mutableStateOf("") }
     var newPasswordContent by remember { mutableStateOf("") }
+
+    // 当进入页面时加载对应密码本的数据
+    LaunchedEffect(bookId) {
+        viewModel.loadBookItems(bookId)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(book?.title ?: "密码本详情") },
+                title = { Text("密码本详情") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "返回")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Text("保存")
                     }
                 }
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            // 添加密码项
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            // 添加新密码项的表单
             OutlinedTextField(
                 value = newPasswordTitle,
                 onValueChange = { newPasswordTitle = it },
                 label = { Text("密码标题") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = newPasswordContent,
                 onValueChange = { newPasswordContent = it },
@@ -67,24 +80,35 @@ fun PasswordBookDetailScreen(viewModel: PasswordViewModel, bookId: Long, navCont
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             Button(
                 onClick = {
                     if (newPasswordTitle.isNotBlank() && newPasswordContent.isNotBlank()) {
-                        viewModel.addPasswordItem(bookId, newPasswordTitle, newPasswordContent)
+                        viewModel.addPasswordItem(
+                            bookId = bookId,
+                            title = newPasswordTitle,
+                            password = newPasswordContent
+                        )
                         newPasswordTitle = ""
                         newPasswordContent = ""
                     }
                 },
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
             ) {
                 Text("添加密码")
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
+            // 密码项列表
             LazyColumn {
-                items(book?.passwords ?: emptyList(), key = { it.id }) { passwordItem ->
-                    PasswordItemRow(passwordItem, viewModel, bookId)
+                items(currentItems, key = { it.id }) { passwordItem ->
+                    PasswordItemRow(
+                        passwordItem = passwordItem,
+                        viewModel = viewModel,
+                        bookId = bookId
+                    )
                 }
             }
         }
