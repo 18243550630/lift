@@ -13,15 +13,18 @@ import androidx.compose.ui.Modifier
 class NewsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         setContent {
-            NewsAppTheme {
+            /*  NewsAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     AppNavigation()
                 }
             }
+        }
+    }*/
+            NewsScreen()
         }
     }
 }
