@@ -23,7 +23,7 @@ class NutrientActivity : ComponentActivity() {
 
         setContent {
             LifeServicesAssistantTheme {
-                NutrientScreen(viewModel = viewModel, apiKey = "ee5d3823a527577eee53438f2951d4d4") // 👈 替换为你的真实 APIKEY
+                NutrientScreen(viewModel = viewModel, apiKey = "ee5d3823a527577eee53438f2951d4d4",onBackClick = { finish() }) // 👈 替换为你的真实 APIKEY
             }
         }
     }
