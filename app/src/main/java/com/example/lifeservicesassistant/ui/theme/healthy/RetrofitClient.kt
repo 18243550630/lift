@@ -24,5 +24,14 @@ object RetrofitClient {
             .build()
             .create(HealthApiService::class.java)
     }
+
+    val nutrientApi: NutrientApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://apis.tianapi.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NutrientApiService::class.java)
+    }
+
 }
 

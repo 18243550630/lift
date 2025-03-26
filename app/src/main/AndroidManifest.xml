@@ -52,6 +52,7 @@
         <activity android:name=".ui.theme.password.PasswordManagementActivity"/>
        <activity android:name=".ui.theme.news.NewsActivity"/>
         <activity android:name=".ui.theme.healthy.HealthTipActivity"/>
+        <activity android:name=".ui.theme.healthy.NutrientActivity"/>
 
 
 
