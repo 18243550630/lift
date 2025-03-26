@@ -133,7 +133,7 @@ fun HealthScreen(
             Card(
                 modifier = Modifier.fillMaxWidth().clickable {
                     // 跳转到 DietRecommendationActivity
-                    val intent = Intent(context, DietRecommendationActivity::class.java)
+                    val intent = Intent(context, HealthTipActivity::class.java)
                     context.startActivity(intent)
                 },
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6)),
@@ -162,7 +162,11 @@ fun HealthScreen(
 
             // 站立卡片
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable {
+                    // 跳转到 DietRecommendationActivity
+                    val intent = Intent(context, DietRecommendationActivity::class.java)
+                    context.startActivity(intent)
+                },
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFE1F5FE)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {

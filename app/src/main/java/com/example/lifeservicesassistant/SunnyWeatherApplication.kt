@@ -12,11 +12,19 @@ class SunnyWeatherApplication : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
         const val TOKEN ="Vczm2e343HdWRIH4"
+
+/*        lateinit var database: HealthTipDatabase
+            private set*/
     }
 
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+/*        database = Room.databaseBuilder(
+            applicationContext,
+            HealthTipDatabase::class.java,
+            "health-db"
+        ).build()*/
     }
 
 

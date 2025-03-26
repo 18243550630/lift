@@ -11,6 +11,8 @@ import com.example.lifeservicesassistant.ui.theme.MyAppTheme
 import com.example.lifeservicesassistant.ui.theme.mianview.AppScreen
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
