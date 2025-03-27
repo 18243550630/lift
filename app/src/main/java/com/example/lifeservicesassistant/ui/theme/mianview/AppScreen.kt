@@ -40,6 +40,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.DateActivity
 import com.example.lifeservicesassistant.ui.theme.otro.LoginActivity
 import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
+import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
 import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
 
 /*@OptIn(ExperimentalLayoutApi::class)
@@ -154,11 +155,11 @@ fun AppScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(5) { index -> // Sample two categories (常用应用 and 查询应用)
-                val iconsForCategory = if (index == 0) 6 else if (index == 1) 7 else if (index == 2) 1 else if (index == 3) 1 else 1// 动态控制每个类别下的图标数量
+                val iconsForCategory = if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 1 else if (index == 3) 1 else 1// 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 }  else if(index == 1) {
-                    listOf("计时器", "计算器", "日期计算器", "计分板","颜色转换器","随机数生成","3") // 查询应用的图标名称
+                    listOf("计时器", "计算器", "日期计算器", "计分板","颜色转换器","随机数生成","3","二维码制作") // 查询应用的图标名称
                 }else if(index == 2){
                     listOf("1")
 
@@ -177,7 +178,7 @@ fun AppScreen() {
                     ) // 对应的图片资源ID
                 } else if (index == 1){
                     listOf(
-                        R.drawable.iron_time, R.drawable.iron_calculate, R.drawable.iron_date_calculate, R.drawable.iron_scoreboard, R.drawable.iron_color, R.drawable.iron_suijishu, R.drawable.iron_decision
+                        R.drawable.iron_time, R.drawable.iron_calculate, R.drawable.iron_date_calculate, R.drawable.iron_scoreboard, R.drawable.iron_color, R.drawable.iron_suijishu, R.drawable.iron_decision,R.drawable.iron_decision
                     ) // 对应的图片资源ID
                 }else if (index == 2){
                     listOf(R.drawable.iron_time,)
@@ -209,6 +210,7 @@ fun AppScreen() {
                                ColorConverterActivity::class.java,
                                RandomNumberActivity::class.java,
                                 LoginActivity::class.java,
+                        QrCodeActivity::class.java
                     )
                 }else if (index == 2){
                     listOf(
@@ -227,7 +229,7 @@ fun AppScreen() {
 
 
                 AppCategoryRow(
-                    categoryName = if (index == 0) "常用应用" else if (index == 1) "查询应用" else if(index == 2) "娱乐游戏" else if(index == 3) "知识百科" else "其他",
+                    categoryName = if (index == 0) "常用应用" else if (index == 1) "实用应用" else if(index == 2) "娱乐游戏" else if(index == 3) "知识百科" else "其他",
                     iconNames = iconNames,
                     iconImages = iconImages,
                     targetActivities = targetActivities

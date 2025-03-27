@@ -57,6 +57,7 @@
         <activity android:name=".ui.theme.healthy.MedicineActivity"/>
         <activity android:name=".ui.theme.healthy.RecipeActivity"/>
         <activity android:name=".ui.theme.konwledge.sudu.SudokuActivity"/>
+        <activity android:name=".ui.theme.otro.qrcode.QrCodeActivity"/>
 
 
 
