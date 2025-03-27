@@ -40,6 +40,13 @@ object RetrofitClient {
             .build()
             .create(MedicineApiService::class.java)
     }
+    fun createRecipeApiService(): RecipeApiService {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RecipeApiService::class.java)
+    }
 
 }
 

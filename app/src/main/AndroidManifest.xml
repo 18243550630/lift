@@ -54,6 +54,7 @@
         <activity android:name=".ui.theme.healthy.HealthTipActivity"/>
         <activity android:name=".ui.theme.healthy.NutrientActivity"/>
         <activity android:name=".ui.theme.healthy.MedicineActivity"/>
+        <activity android:name=".ui.theme.healthy.RecipeActivity"/>
 
 
 

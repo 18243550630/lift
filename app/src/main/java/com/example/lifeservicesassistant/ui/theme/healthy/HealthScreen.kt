@@ -245,6 +245,34 @@ fun HealthScreen(
                 }
             }
 
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable {
+                    // 跳转到 DietRecommendationActivity
+                    val intent = Intent(context, RecipeActivity::class.java)
+                    context.startActivity(intent)
+                },
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 使用 painterResource 加载图标
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_sport),
+                        contentDescription = "Diet Recommendation",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = "中药大全", style = TextStyle(fontWeight = FontWeight.Bold))
+                    }
+                }
+            }
+
             // 血压卡片（示例占位符）
             Card(
                 modifier = Modifier.fillMaxWidth(),
