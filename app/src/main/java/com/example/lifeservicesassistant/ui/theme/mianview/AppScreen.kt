@@ -152,12 +152,21 @@ fun AppScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(2) { index -> // Sample two categories (常用应用 and 查询应用)
-                val iconsForCategory = if (index == 0) 6 else 7 // 动态控制每个类别下的图标数量
+            items(5) { index -> // Sample two categories (常用应用 and 查询应用)
+                val iconsForCategory = if (index == 0) 6 else if (index == 1) 7 else if (index == 2) 1 else if (index == 3) 1 else 1// 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
-                } else {
+                }  else if(index == 1) {
                     listOf("计时器", "计算器", "日期计算器", "计分板","颜色转换器","随机数生成","3") // 查询应用的图标名称
+                }else if(index == 2){
+                    listOf("1")
+
+                }else if (index == 3){
+                    listOf("2")
+
+                }else{
+                    listOf("3")
+
                 }
 
                 val iconImages = if (index == 0) {
@@ -165,11 +174,21 @@ fun AppScreen() {
                         R.drawable.iron_weather, R.drawable.iron_healthy, R.drawable.iron_accounts,
                         R.drawable.iron_record, R.drawable.iron_news, R.drawable.iron_data
                     ) // 对应的图片资源ID
-                } else {
+                } else if (index == 1){
                     listOf(
                         R.drawable.iron_time, R.drawable.iron_calculate, R.drawable.iron_date_calculate, R.drawable.iron_scoreboard, R.drawable.iron_color, R.drawable.iron_suijishu, R.drawable.iron_decision
                     ) // 对应的图片资源ID
+                }else if (index == 2){
+                    listOf(R.drawable.iron_time,)
+
+                }else if (index == 3){
+                    listOf(R.drawable.iron_time,)
+
+                }else{
+                    listOf(R.drawable.iron_time,)
+
                 }
+
 
                 val targetActivities = if (index == 0) {
                     listOf(
@@ -180,7 +199,7 @@ fun AppScreen() {
                         NewsActivity::class.java,
                         DataActivity::class.java
                     )
-                } else {
+                } else if (index == 1) {
                     listOf(
                         TimerActivity::class.java,
                         ConterActivity::class.java,
@@ -190,10 +209,24 @@ fun AppScreen() {
                                RandomNumberActivity::class.java,
                                 LoginActivity::class.java,
                     )
+                }else if (index == 2){
+                    listOf(
+                        LoginActivity::class.java,
+                    )
+
+                }else if (index == 3){
+                    listOf(
+                        LoginActivity::class.java,
+                    )
+                }else{
+                    listOf(
+                        LoginActivity::class.java,
+                    )
                 }
 
+
                 AppCategoryRow(
-                    categoryName = if (index == 0) "常用应用" else "查询应用",
+                    categoryName = if (index == 0) "常用应用" else if (index == 1) "查询应用" else if(index == 2) "娱乐游戏" else if(index == 3) "知识百科" else "其他",
                     iconNames = iconNames,
                     iconImages = iconImages,
                     targetActivities = targetActivities
