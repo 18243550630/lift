@@ -53,6 +53,7 @@
        <activity android:name=".ui.theme.news.NewsActivity"/>
         <activity android:name=".ui.theme.healthy.HealthTipActivity"/>
         <activity android:name=".ui.theme.healthy.NutrientActivity"/>
+        <activity android:name=".ui.theme.healthy.MedicineActivity"/>
 
 
 

@@ -154,7 +154,7 @@ fun HealthScreen(
                         modifier = Modifier.size(40.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "运动计划", style = TextStyle(fontWeight = FontWeight.Bold))
+                        Text(text = "推荐饮食", style = TextStyle(fontWeight = FontWeight.Bold))
                         Text(text = "", style = TextStyle(fontWeight = FontWeight.Light))
                     }
                 }
@@ -183,7 +183,7 @@ fun HealthScreen(
                         modifier = Modifier.size(40.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "推荐饮食", style = TextStyle(fontWeight = FontWeight.Bold))
+                        Text(text = "生活小妙招", style = TextStyle(fontWeight = FontWeight.Bold))
                     }
                 }
             }
@@ -211,13 +211,39 @@ fun HealthScreen(
                         modifier = Modifier.size(40.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "推荐饮食", style = TextStyle(fontWeight = FontWeight.Bold))
+                        Text(text = "营养成分表", style = TextStyle(fontWeight = FontWeight.Bold))
                     }
                 }
             }
 
 
-
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable {
+                    // 跳转到 DietRecommendationActivity
+                    val intent = Intent(context, MedicineActivity::class.java)
+                    context.startActivity(intent)
+                },
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 使用 painterResource 加载图标
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_sport),
+                        contentDescription = "Diet Recommendation",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = "中药大全", style = TextStyle(fontWeight = FontWeight.Bold))
+                    }
+                }
+            }
 
             // 血压卡片（示例占位符）
             Card(

@@ -33,5 +33,13 @@ object RetrofitClient {
             .create(NutrientApiService::class.java)
     }
 
+    val medicineApi: MedicineApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(MedicineApiService::class.java)
+    }
+
 }
 
