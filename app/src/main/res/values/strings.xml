@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Life Services Assistant</string>
     <string name="tianapi_key">ee5d3823a527577eee53438f2951d4d4</string>
+    <string name="juhe_sudu_key">52e087249e726a384cb7108c98d98622</string>
     <style name="buttonTheme">
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>

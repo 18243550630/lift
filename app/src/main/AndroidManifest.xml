@@ -13,6 +13,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -55,6 +56,7 @@
         <activity android:name=".ui.theme.healthy.NutrientActivity"/>
         <activity android:name=".ui.theme.healthy.MedicineActivity"/>
         <activity android:name=".ui.theme.healthy.RecipeActivity"/>
+        <activity android:name=".ui.theme.konwledge.sudu.SudokuActivity"/>
 
 
 

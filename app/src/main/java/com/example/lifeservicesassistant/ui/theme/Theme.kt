@@ -1,4 +1,5 @@
 import android.app.Activity
+import android.graphics.fonts.FontFamily
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,9 @@ import com.example.lifeservicesassistant.ui.theme.Purple40
 import com.example.lifeservicesassistant.ui.theme.Purple80
 import com.example.lifeservicesassistant.ui.theme.PurpleGrey40
 import com.example.lifeservicesassistant.ui.theme.PurpleGrey80
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 
 /*
 
@@ -89,6 +93,7 @@ fun CalculatorTheme(
 ) {
     MaterialTheme(
         colorScheme = LightColorScheme,
+        //typography = Typography,
         content = content
     )
 }
@@ -121,6 +126,7 @@ fun LifeServicesAssistantTheme(
         else -> LightColorScheme
     }
     val view = LocalView.current
+
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
@@ -131,7 +137,7 @@ fun LifeServicesAssistantTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        //typography = Typography,
+       // typography = Typography,
         content = content
     )
 }
