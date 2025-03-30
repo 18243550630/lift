@@ -1,5 +1,6 @@
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
+import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -20,5 +21,12 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SynonymAntonymApiService::class.java)
+    }
+    val medicineInstructionApi: MedicineInstructionApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(MedicineInstructionApiService::class.java)
     }
 }

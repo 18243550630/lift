@@ -31,6 +31,7 @@ import com.example.lifeservicesassistant.WeatherForecastActivity
 import com.example.lifeservicesassistant.RecordActivity
 import com.example.lifeservicesassistant.ui.theme.data.DataActivity
 import com.example.lifeservicesassistant.ui.theme.event.EventListActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.SynonymAntonymActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.sudu.SudokuActivity
@@ -224,7 +225,7 @@ fun AppScreen() {
                     listOf(
                         QAActivity::class.java,
                         SynonymAntonymActivity::class.java,
-                        SynonymAntonymActivity::class.java,
+                        MedicineInstructionActivity::class.java,
                         SynonymAntonymActivity::class.java
                     )
                 }else{

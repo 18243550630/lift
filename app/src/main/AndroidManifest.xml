@@ -60,6 +60,7 @@
         <activity android:name=".ui.theme.otro.qrcode.QrCodeActivity"/>
         <activity android:name=".ui.theme.konwledge.problem.QAActivity"/>
         <activity android:name=".ui.theme.konwledge.problem.SynonymAntonymActivity"/>
+       <activity android:name=".ui.theme.konwledge.medicine.MedicineInstructionActivity"/>
 
 
 
