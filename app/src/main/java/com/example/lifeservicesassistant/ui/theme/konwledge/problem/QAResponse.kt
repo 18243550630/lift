@@ -13,5 +13,5 @@ data class QAResult(
     val answerC: String,
     val answerD: String,
     val answer: String,  // 正确答案标识（如"A"、"B"等）
-    val analytic: String
+    val analytic: String?
 )
