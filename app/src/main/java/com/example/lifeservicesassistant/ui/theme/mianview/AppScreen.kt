@@ -32,6 +32,7 @@ import com.example.lifeservicesassistant.RecordActivity
 import com.example.lifeservicesassistant.ui.theme.data.DataActivity
 import com.example.lifeservicesassistant.ui.theme.event.EventListActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.problem.SynonymAntonymActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.sudu.SudokuActivity
 import com.example.lifeservicesassistant.ui.theme.news.NewsActivity
 import com.example.lifeservicesassistant.ui.theme.news.NewsItem
@@ -156,7 +157,7 @@ fun AppScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(5) { index -> // Sample two categories (常用应用 and 查询应用)
-                val iconsForCategory = if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 1 else if (index == 3) 1 else 1// 动态控制每个类别下的图标数量
+                val iconsForCategory = if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 1 else if (index == 3) 4 else 1// 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 }  else if(index == 1) {
@@ -165,7 +166,7 @@ fun AppScreen() {
                     listOf("1")
 
                 }else if (index == 3){
-                    listOf("2")
+                    listOf("知识百科","词语近反义词","1","2")
 
                 }else{
                     listOf("3")
@@ -185,7 +186,8 @@ fun AppScreen() {
                     listOf(R.drawable.iron_time,)
 
                 }else if (index == 3){
-                    listOf(R.drawable.iron_time,)
+                    listOf(
+                        R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
 
                 }else{
                     listOf(R.drawable.iron_time,)
@@ -221,6 +223,9 @@ fun AppScreen() {
                 }else if (index == 3){
                     listOf(
                         QAActivity::class.java,
+                        SynonymAntonymActivity::class.java,
+                        SynonymAntonymActivity::class.java,
+                        SynonymAntonymActivity::class.java
                     )
                 }else{
                     listOf(

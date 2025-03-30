@@ -13,4 +13,12 @@ object RetrofitClient {
             .build()
             .create(QAApiService::class.java)
     }
+
+    val synonymAntonymApi: SynonymAntonymApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SynonymAntonymApiService::class.java)
+    }
 }
