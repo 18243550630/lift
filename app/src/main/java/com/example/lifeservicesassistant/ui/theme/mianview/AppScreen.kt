@@ -31,6 +31,7 @@ import com.example.lifeservicesassistant.WeatherForecastActivity
 import com.example.lifeservicesassistant.RecordActivity
 import com.example.lifeservicesassistant.ui.theme.data.DataActivity
 import com.example.lifeservicesassistant.ui.theme.event.EventListActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.sudu.SudokuActivity
 import com.example.lifeservicesassistant.ui.theme.news.NewsActivity
 import com.example.lifeservicesassistant.ui.theme.news.NewsItem
@@ -219,7 +220,7 @@ fun AppScreen() {
 
                 }else if (index == 3){
                     listOf(
-                        LoginActivity::class.java,
+                        QAActivity::class.java,
                     )
                 }else{
                     listOf(
