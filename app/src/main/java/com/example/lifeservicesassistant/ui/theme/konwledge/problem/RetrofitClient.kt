@@ -1,6 +1,7 @@
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
 import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionApiService
+import com.example.lifeservicesassistant.ui.theme.play.DreamApiService
 import com.example.lifeservicesassistant.ui.theme.play.HoroscopeApiService
 import com.example.lifeservicesassistant.ui.theme.play.HotNewsApiService
 import retrofit2.Retrofit
@@ -45,4 +46,13 @@ object RetrofitClient {
             .build()
             .create(HotNewsApiService::class.java)
     }
+
+    val dreamApi: DreamApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(DreamApiService::class.java)
+    }
+
 }

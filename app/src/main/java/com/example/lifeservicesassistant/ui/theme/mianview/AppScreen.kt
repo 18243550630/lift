@@ -45,6 +45,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
 import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
+import com.example.lifeservicesassistant.ui.theme.play.DreamActivity
 import com.example.lifeservicesassistant.ui.theme.play.HoroscopeActivity
 import com.example.lifeservicesassistant.ui.theme.play.HotNewsActivity
 
@@ -176,10 +177,10 @@ fun AppScreen() {
                         "二维码制作"
                     ) // 查询应用的图标名称
                 } else if (index == 2) {
-                    listOf("数独游戏生成", "1", "2", "3")
+                    listOf("数独游戏生成", "星座运势", "实时热搜榜", "周公解梦")
 
                 } else {
-                    listOf("知识百科", "词语近反义词", "1", "2")
+                    listOf("知识百科", "词语近反义词", "药品知识", "2")
 
                 }
 
@@ -238,7 +239,7 @@ fun AppScreen() {
                         SudokuActivity::class.java,
                         HoroscopeActivity::class.java,
                         HotNewsActivity::class.java,
-                        SudokuActivity::class.java,
+                        DreamActivity::class.java,
                     )
 
                 } else {
