@@ -45,6 +45,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
 import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
+import com.example.lifeservicesassistant.ui.theme.play.HoroscopeActivity
 
 /*@OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -157,20 +158,27 @@ fun AppScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(5) { index -> // Sample two categories (常用应用 and 查询应用)
-                val iconsForCategory = if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 1 else if (index == 3) 4 else 1// 动态控制每个类别下的图标数量
+            items(4) { index -> // Sample two categories (常用应用 and 查询应用)
+                val iconsForCategory =
+                    if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 4 else 4 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
-                }  else if(index == 1) {
-                    listOf("计时器", "计算器", "日期计算器", "计分板","颜色转换器","随机数生成","3","二维码制作") // 查询应用的图标名称
-                }else if(index == 2){
-                    listOf("1")
+                } else if (index == 1) {
+                    listOf(
+                        "计时器",
+                        "计算器",
+                        "日期计算器",
+                        "计分板",
+                        "颜色转换器",
+                        "随机数生成",
+                        "3",
+                        "二维码制作"
+                    ) // 查询应用的图标名称
+                } else if (index == 2) {
+                    listOf("数独游戏生成", "1", "2", "3")
 
-                }else if (index == 3){
-                    listOf("知识百科","词语近反义词","1","2")
-
-                }else{
-                    listOf("3")
+                } else {
+                    listOf("知识百科", "词语近反义词", "1", "2")
 
                 }
 
@@ -179,19 +187,27 @@ fun AppScreen() {
                         R.drawable.iron_weather, R.drawable.iron_healthy, R.drawable.iron_accounts,
                         R.drawable.iron_record, R.drawable.iron_news, R.drawable.iron_data
                     ) // 对应的图片资源ID
-                } else if (index == 1){
+                } else if (index == 1) {
                     listOf(
-                        R.drawable.iron_time, R.drawable.iron_calculate, R.drawable.iron_date_calculate, R.drawable.iron_scoreboard, R.drawable.iron_color, R.drawable.iron_suijishu, R.drawable.iron_decision,R.drawable.iron_decision
+                        R.drawable.iron_time,
+                        R.drawable.iron_calculate,
+                        R.drawable.iron_date_calculate,
+                        R.drawable.iron_scoreboard,
+                        R.drawable.iron_color,
+                        R.drawable.iron_suijishu,
+                        R.drawable.iron_decision,
+                        R.drawable.iron_decision
                     ) // 对应的图片资源ID
-                }else if (index == 2){
-                    listOf(R.drawable.iron_time,)
+                } else if (index == 2) {
+                    listOf(R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
 
-                }else if (index == 3){
+                } else {
                     listOf(
-                        R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
-
-                }else{
-                    listOf(R.drawable.iron_time,)
+                        R.drawable.iron_time,
+                        R.drawable.iron_time,
+                        R.drawable.iron_time,
+                        R.drawable.iron_time,
+                    )
 
                 }
 
@@ -211,32 +227,32 @@ fun AppScreen() {
                         ConterActivity::class.java,
                         DateActivity::class.java,
                         ScoreboardActivity::class.java,
-                               ColorConverterActivity::class.java,
-                               RandomNumberActivity::class.java,
-                                LoginActivity::class.java,
+                        ColorConverterActivity::class.java,
+                        RandomNumberActivity::class.java,
+                        LoginActivity::class.java,
                         QrCodeActivity::class.java
                     )
-                }else if (index == 2){
+                } else if (index == 2) {
                     listOf(
+                        SudokuActivity::class.java,
+                        HoroscopeActivity::class.java,
+                        SudokuActivity::class.java,
                         SudokuActivity::class.java,
                     )
 
-                }else if (index == 3){
+                } else {
                     listOf(
                         QAActivity::class.java,
                         SynonymAntonymActivity::class.java,
                         MedicineInstructionActivity::class.java,
                         SynonymAntonymActivity::class.java
                     )
-                }else{
-                    listOf(
-                        LoginActivity::class.java,
-                    )
                 }
 
 
+
                 AppCategoryRow(
-                    categoryName = if (index == 0) "常用应用" else if (index == 1) "实用应用" else if(index == 2) "娱乐游戏" else if(index == 3) "知识百科" else "其他",
+                    categoryName = if (index == 0) "常用应用" else if (index == 1) "实用应用" else if(index == 2) "娱乐游戏" else  "知识百科" ,
                     iconNames = iconNames,
                     iconImages = iconImages,
                     targetActivities = targetActivities

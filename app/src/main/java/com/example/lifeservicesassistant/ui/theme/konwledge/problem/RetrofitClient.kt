@@ -1,6 +1,7 @@
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
 import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionApiService
+import com.example.lifeservicesassistant.ui.theme.play.HoroscopeApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -28,5 +29,12 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MedicineInstructionApiService::class.java)
+    }
+    val horoscopeApi: HoroscopeApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(HoroscopeApiService::class.java)
     }
 }
