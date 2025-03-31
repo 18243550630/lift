@@ -9,7 +9,11 @@ import com.example.lifeservicesassistant.R
 import com.example.lifeservicesassistant.ui.theme.MyAppTheme
 
 class MoneyConversionActivity : ComponentActivity() {
-    private val viewModel: MoneyConversionViewModel by viewModels()
+    private val viewModel: MoneyConversionViewModel by viewModels {
+        MoneyConversionViewModelFactory(
+            application
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

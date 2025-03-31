@@ -1,6 +1,10 @@
 // MoneyConversionViewModel.kt
 package com.example.lifeservicesassistant.ui.theme.otro
 
+import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lifeservicesassistant.R
@@ -10,11 +14,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MoneyConversionViewModel : ViewModel() {
+class MoneyConversionViewModel( private val application: Application) : ViewModel() {
     private val _state = MutableStateFlow(MoneyConversionState())
     val state: StateFlow<MoneyConversionState> = _state
     
     private var currentCurrencyType = "rmb" // 默认人民币
+
+    fun copyToClipboard(text: String, label: String = "金额转换结果") {
+        val clipboard = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText(label, text)
+        clipboard.setPrimaryClip(clip)
+    }
 
     fun convertAmount(amount: String, currencyType: String = currentCurrencyType) {
         currentCurrencyType = currencyType
