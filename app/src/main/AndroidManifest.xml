@@ -65,6 +65,7 @@
         <activity android:name=".ui.theme.play.HotNewsActivity"/>
         <activity android:name=".ui.theme.play.DreamActivity"/>
         <activity android:name=".ui.theme.otro.MoneyConversionActivity"/>
+        <activity android:name=".ui.theme.otro.OilPriceActivity"/>
 
 
 

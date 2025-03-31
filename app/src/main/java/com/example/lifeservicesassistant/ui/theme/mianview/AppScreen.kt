@@ -42,6 +42,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.ColorConverterActivity
 import com.example.lifeservicesassistant.ui.theme.otro.DateActivity
 import com.example.lifeservicesassistant.ui.theme.otro.LoginActivity
 import com.example.lifeservicesassistant.ui.theme.otro.MoneyConversionActivity
+import com.example.lifeservicesassistant.ui.theme.otro.OilPriceActivity
 import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
@@ -163,7 +164,7 @@ fun AppScreen() {
         ) {
             items(4) { index -> // Sample two categories (常用应用 and 查询应用)
                 val iconsForCategory =
-                    if (index == 0) 6 else if (index == 1) 8 else if (index == 2) 4 else 4 // 动态控制每个类别下的图标数量
+                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 4 else 4 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 } else if (index == 1) {
@@ -175,7 +176,8 @@ fun AppScreen() {
                         "颜色转换器",
                         "随机数生成",
                         "金额转大写",
-                        "二维码制作"
+                        "二维码制作",
+                        "实时油价"
                     ) // 查询应用的图标名称
                 } else if (index == 2) {
                     listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦")
@@ -198,6 +200,7 @@ fun AppScreen() {
                         R.drawable.iron_scoreboard,
                         R.drawable.iron_color,
                         R.drawable.iron_suijishu,
+                        R.drawable.iron_decision,
                         R.drawable.iron_decision,
                         R.drawable.iron_decision
                     ) // 对应的图片资源ID
@@ -233,7 +236,8 @@ fun AppScreen() {
                         ColorConverterActivity::class.java,
                         RandomNumberActivity::class.java,
                         MoneyConversionActivity::class.java,
-                        QrCodeActivity::class.java
+                        QrCodeActivity::class.java,
+                        OilPriceActivity::class.java
                     )
                 } else if (index == 2) {
                     listOf(
