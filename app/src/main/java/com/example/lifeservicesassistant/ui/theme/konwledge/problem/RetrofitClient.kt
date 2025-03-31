@@ -71,4 +71,14 @@ object RetrofitClient {
             .build()
             .create(OilPriceApiService::class.java)
     }
+    val garbageApi: GarbageApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GarbageApiService::class.java)
+    }
+
+
+
 }

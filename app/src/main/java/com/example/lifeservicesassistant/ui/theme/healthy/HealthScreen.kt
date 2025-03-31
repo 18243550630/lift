@@ -94,7 +94,10 @@ fun HealthScreen(
                         modifier = Modifier.size(40.dp),
                         strokeWidth = 4.dp
                     )
-                    Text("完成进度：${(progress * 100).toInt()}%", style = TextStyle(fontWeight = FontWeight.Bold))
+                    Text(
+                        "完成进度：${(progress * 100).toInt()}%",
+                        style = TextStyle(fontWeight = FontWeight.Bold)
+                    )
                 }
             }
 
@@ -107,7 +110,7 @@ fun HealthScreen(
                     val intent = Intent(context, BodyInfoActivity::class.java)
                     context.startActivity(intent)
                 },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF8BBD0)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Row(
@@ -137,7 +140,7 @@ fun HealthScreen(
                     val intent = Intent(context, DietRecommendationActivity::class.java)
                     context.startActivity(intent)
                 },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE1F5FE)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xAAC1F6FE)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Row(
@@ -166,7 +169,7 @@ fun HealthScreen(
                     val intent = Intent(context, HealthTipActivity::class.java)
                     context.startActivity(intent)
                 },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xF2A2EDF6)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Row(
@@ -272,8 +275,11 @@ fun HealthScreen(
                     }
                 }
             }
+        }
+    }
+}
 
-            // 血压卡片（示例占位符）
+/*            // 血压卡片（示例占位符）
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF8BBD0)),
@@ -300,7 +306,7 @@ fun HealthScreen(
             }
         }
     }
-}
+}*/
 
 /*
 @Preview(showBackground = true)

@@ -32,6 +32,7 @@ import com.example.lifeservicesassistant.RecordActivity
 import com.example.lifeservicesassistant.ui.theme.data.DataActivity
 import com.example.lifeservicesassistant.ui.theme.event.EventListActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.problem.GarbageActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.SynonymAntonymActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.sudu.SudokuActivity
@@ -183,7 +184,7 @@ fun AppScreen() {
                     listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦")
 
                 } else {
-                    listOf("知识百科", "词语近反义词", "药品知识", "2")
+                    listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识")
 
                 }
 
@@ -252,7 +253,7 @@ fun AppScreen() {
                         QAActivity::class.java,
                         SynonymAntonymActivity::class.java,
                         MedicineInstructionActivity::class.java,
-                        SynonymAntonymActivity::class.java
+                        GarbageActivity::class.java
                     )
                 }
 
