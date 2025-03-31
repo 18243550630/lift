@@ -22,7 +22,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MedicineInstructionScreen(
@@ -48,84 +51,88 @@ fun MedicineInstructionScreen(
     onBackClick: () -> Unit = {}
 ) {
     var keyword by remember { mutableStateOf("") }
-    val instructions by viewModel.instructions.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.errorMessage.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize()
-    ) {
-        // 顶部栏
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.Default.ArrowBack, "返回")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("药品说明书查询") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, "返回")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            // 搜索栏
+            SearchBar(
+                query = keyword,
+                onQueryChange = { keyword = it },
+                onSearch = { viewModel.searchMedicine(apiKey, keyword) },
+                loading = state.isLoading,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            when {
+                state.isLoading -> FullScreenLoading()
+                state.error != null -> ErrorMessage(state.error!!)
+                state.instructions.isEmpty() -> EmptyPlaceholder()
+                else -> MedicineList(instructions = state.instructions)
             }
-            Text("药品说明书查询", style = MaterialTheme.typography.h5)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 搜索栏
-        MedicineSearchBar(
-            keyword = keyword,
-            onKeywordChange = { keyword = it },
-            onSearch = { viewModel.searchMedicine(apiKey, keyword) },
-            isLoading = isLoading
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 错误提示
-        error?.let { message ->
-            ErrorMessage(message)
-        }
-
-        // 结果展示
-        when {
-            isLoading -> LoadingIndicator()
-            instructions.isNotEmpty() -> MedicineInstructionList(instructions)
-            else -> EmptyPlaceholder()
         }
     }
 }
 
 @Composable
-private fun MedicineSearchBar(
-    keyword: String,
-    onKeywordChange: (String) -> Unit,
+private fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
-    isLoading: Boolean
+    loading: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    OutlinedTextField(
-        value = keyword,
-        onValueChange = onKeywordChange,
-        label = { Text("输入药品名称（如：阿奇霉素）") },
-        trailingIcon = {
-            if (keyword.isNotEmpty()) {
-                IconButton(
-                    onClick = onSearch,
-                    enabled = !isLoading
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                    } else {
-                        Icon(Icons.Default.Search, "搜索")
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            label = { Text("输入药品名称") },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(
+                        onClick = onSearch,
+                        enabled = !loading
+                    ) {
+                        if (loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        } else {
+                            Icon(Icons.Default.Search, "搜索")
+                        }
                     }
                 }
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() })
-    )
+            },
+            keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+            modifier = Modifier.weight(1f)
+        )
+    }
 }
 
 @Composable
-private fun MedicineInstructionList(instructions: List<MedicineInstruction>) {
+private fun MedicineList(instructions: List<MedicineInstruction>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(instructions) { medicine ->
             MedicineInstructionCard(medicine)
@@ -134,21 +141,22 @@ private fun MedicineInstructionList(instructions: List<MedicineInstruction>) {
 }
 
 @Composable
-private fun MedicineInstructionCard(medicine: MedicineInstruction) {
+fun MedicineInstructionCard(medicine: MedicineInstruction) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
         elevation = 4.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            // 标题行
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = medicine.title,
                     style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
@@ -157,25 +165,37 @@ private fun MedicineInstructionCard(medicine: MedicineInstruction) {
                 ) {
                     Icon(
                         if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        "展开/收起"
+                        contentDescription = if (expanded) "收起" else "展开"
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 基本信息
-            InfoRow("规格", medicine.safeSpecification)
-            InfoRow("用法用量", medicine.safeUsage)
+            // 关键信息摘要
+            medicine.aliases?.let {
+                InfoRow("别名", it)
+            }
 
-            // 展开详情
+            medicine.specification?.let {
+                InfoRow("规格", it)
+            }
+
+            medicine.usage?.let {
+                InfoRow("用法用量", it)
+            }
+
+            medicine.sideEffects?.let {
+                InfoRow("不良反应", it)
+            }
+
+            // 完整内容（可展开）
             AnimatedVisibility(visible = expanded) {
-                Column {
-                    InfoRow("不良反应", medicine.safeSideEffects)
-                    Spacer(modifier = Modifier.height(8.dp))
+                Column(modifier = Modifier.padding(top = 8.dp)) {
                     Text(
-                        text = medicine.content,
-                        style = MaterialTheme.typography.body2
+                        text = medicine.parsedContent,
+                        style = MaterialTheme.typography.body2,
+                        lineHeight = 20.sp
                     )
                 }
             }
@@ -185,15 +205,15 @@ private fun MedicineInstructionCard(medicine: MedicineInstruction) {
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(modifier = Modifier.padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(
-            text = "$label：",
+            text = label,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.width(80.dp)
+            color = MaterialTheme.colors.primary
         )
         Text(
             text = value,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
