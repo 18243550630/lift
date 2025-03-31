@@ -78,7 +78,13 @@ object RetrofitClient {
             .build()
             .create(GarbageApiService::class.java)
     }
-
+    val computerTermApi: ComputerTermApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ComputerTermApiService::class.java)
+    }
 
 
 }

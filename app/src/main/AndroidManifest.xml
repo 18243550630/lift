@@ -67,6 +67,7 @@
         <activity android:name=".ui.theme.otro.MoneyConversionActivity"/>
         <activity android:name=".ui.theme.otro.OilPriceActivity"/>
         <activity android:name=".ui.theme.konwledge.problem.GarbageActivity"/>
+        <activity android:name=".ui.theme.konwledge.problem.ComputerTermActivity"/>
 
 
 
