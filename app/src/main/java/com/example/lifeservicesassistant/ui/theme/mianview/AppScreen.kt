@@ -46,6 +46,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
 import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
 import com.example.lifeservicesassistant.ui.theme.play.HoroscopeActivity
+import com.example.lifeservicesassistant.ui.theme.play.HotNewsActivity
 
 /*@OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -236,7 +237,7 @@ fun AppScreen() {
                     listOf(
                         SudokuActivity::class.java,
                         HoroscopeActivity::class.java,
-                        SudokuActivity::class.java,
+                        HotNewsActivity::class.java,
                         SudokuActivity::class.java,
                     )
 
