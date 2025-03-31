@@ -33,6 +33,7 @@ import com.example.lifeservicesassistant.ui.theme.data.DataActivity
 import com.example.lifeservicesassistant.ui.theme.event.EventListActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineInstructionActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.ComputerTermActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.problem.FileExtensionActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.GarbageActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.SynonymAntonymActivity
@@ -166,7 +167,7 @@ fun AppScreen() {
         ) {
             items(4) { index -> // Sample two categories (常用应用 and 查询应用)
                 val iconsForCategory =
-                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 4 else 5 // 动态控制每个类别下的图标数量
+                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 4 else 6 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 } else if (index == 1) {
@@ -185,7 +186,7 @@ fun AppScreen() {
                     listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦")
 
                 } else {
-                    listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语")
+                    listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语","拓展名查询")
 
                 }
 
@@ -211,6 +212,7 @@ fun AppScreen() {
 
                 } else {
                     listOf(
+                        R.drawable.iron_time,
                         R.drawable.iron_time,
                         R.drawable.iron_time,
                         R.drawable.iron_time,
@@ -256,7 +258,8 @@ fun AppScreen() {
                         SynonymAntonymActivity::class.java,
                         MedicineInstructionActivity::class.java,
                         GarbageActivity::class.java,
-                        ComputerTermActivity::class.java
+                        ComputerTermActivity::class.java,
+                        FileExtensionActivity::class.java
                     )
                 }
 

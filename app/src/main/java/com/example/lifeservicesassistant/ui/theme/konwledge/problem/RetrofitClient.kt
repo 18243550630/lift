@@ -85,6 +85,12 @@ object RetrofitClient {
             .build()
             .create(ComputerTermApiService::class.java)
     }
-
+    val fileExtensionApi: FileExtensionApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(FileExtensionApiService::class.java)
+    }
 
 }
