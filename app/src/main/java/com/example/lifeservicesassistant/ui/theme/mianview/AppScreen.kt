@@ -41,6 +41,7 @@ import com.example.lifeservicesassistant.ui.theme.note.NoteActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ColorConverterActivity
 import com.example.lifeservicesassistant.ui.theme.otro.DateActivity
 import com.example.lifeservicesassistant.ui.theme.otro.LoginActivity
+import com.example.lifeservicesassistant.ui.theme.otro.MoneyConversionActivity
 import com.example.lifeservicesassistant.ui.theme.otro.RandomNumberActivity
 import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
@@ -173,11 +174,11 @@ fun AppScreen() {
                         "计分板",
                         "颜色转换器",
                         "随机数生成",
-                        "3",
+                        "金额转大写",
                         "二维码制作"
                     ) // 查询应用的图标名称
                 } else if (index == 2) {
-                    listOf("数独游戏生成", "星座运势", "实时热搜榜", "周公解梦")
+                    listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦")
 
                 } else {
                     listOf("知识百科", "词语近反义词", "药品知识", "2")
@@ -231,7 +232,7 @@ fun AppScreen() {
                         ScoreboardActivity::class.java,
                         ColorConverterActivity::class.java,
                         RandomNumberActivity::class.java,
-                        LoginActivity::class.java,
+                        MoneyConversionActivity::class.java,
                         QrCodeActivity::class.java
                     )
                 } else if (index == 2) {
