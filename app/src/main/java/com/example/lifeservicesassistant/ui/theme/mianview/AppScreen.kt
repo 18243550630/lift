@@ -51,6 +51,7 @@ import com.example.lifeservicesassistant.ui.theme.otro.ScoreboardActivity
 import com.example.lifeservicesassistant.ui.theme.otro.qrcode.QrCodeActivity
 import com.example.lifeservicesassistant.ui.theme.password.PasswordManagementActivity
 import com.example.lifeservicesassistant.ui.theme.play.DreamActivity
+import com.example.lifeservicesassistant.ui.theme.play.FlowerLanguageActivity
 import com.example.lifeservicesassistant.ui.theme.play.HoroscopeActivity
 import com.example.lifeservicesassistant.ui.theme.play.HotNewsActivity
 
@@ -167,7 +168,7 @@ fun AppScreen() {
         ) {
             items(4) { index -> // Sample two categories (常用应用 and 查询应用)
                 val iconsForCategory =
-                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 4 else 6 // 动态控制每个类别下的图标数量
+                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 5 else 6 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 } else if (index == 1) {
@@ -183,7 +184,7 @@ fun AppScreen() {
                         "实时油价"
                     ) // 查询应用的图标名称
                 } else if (index == 2) {
-                    listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦")
+                    listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦","花语箴言")
 
                 } else {
                     listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语","拓展名查询")
@@ -208,7 +209,7 @@ fun AppScreen() {
                         R.drawable.iron_decision
                     ) // 对应的图片资源ID
                 } else if (index == 2) {
-                    listOf(R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
+                    listOf(R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
 
                 } else {
                     listOf(
@@ -250,6 +251,7 @@ fun AppScreen() {
                         HoroscopeActivity::class.java,
                         HotNewsActivity::class.java,
                         DreamActivity::class.java,
+                        FlowerLanguageActivity::class.java
                     )
 
                 } else {

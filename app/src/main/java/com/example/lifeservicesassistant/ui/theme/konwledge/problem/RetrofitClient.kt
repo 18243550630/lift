@@ -4,6 +4,7 @@ import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.MedicineIns
 import com.example.lifeservicesassistant.ui.theme.otro.MoneyConversionApiService
 import com.example.lifeservicesassistant.ui.theme.otro.OilPriceApiService
 import com.example.lifeservicesassistant.ui.theme.play.DreamApiService
+import com.example.lifeservicesassistant.ui.theme.play.FlowerLanguageApiService
 import com.example.lifeservicesassistant.ui.theme.play.HoroscopeApiService
 import com.example.lifeservicesassistant.ui.theme.play.HotNewsApiService
 import retrofit2.Retrofit
@@ -92,5 +93,11 @@ object RetrofitClient {
             .build()
             .create(FileExtensionApiService::class.java)
     }
-
+    val flowerLanguageApi: FlowerLanguageApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(FlowerLanguageApiService::class.java)
+    }
 }
