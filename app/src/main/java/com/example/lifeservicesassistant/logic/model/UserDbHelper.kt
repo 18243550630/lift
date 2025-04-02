@@ -1,9 +1,11 @@
 package com.example.lifeservicesassistant.logic.model
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class UserDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -38,17 +40,22 @@ class UserDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
     }
 
     // 添加用户
+// 添加用户（完整字段）
     fun addUser(user: User): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
+            put(COL_USERNAME, user.username) // 添加用户名
             put(COL_ACCOUNT, user.account)
             put(COL_PASSWORD, user.password)
-            put(COL_REGISTER_TIME, System.currentTimeMillis())
+            put(COL_AVATAR, user.avatar) // 添加头像
+            put(COL_REGISTER_TIME, user.registerTime)
+            put(COL_STATUS, user.status)
         }
         return db.insert(TABLE_NAME, null, values)
     }
 
-    // 根据账号查询用户
+    // 安全查询用户
+    @SuppressLint("Range")
     fun getUserByAccount(account: String): User? {
         val db = readableDatabase
         val cursor = db.query(
@@ -58,21 +65,33 @@ class UserDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
             arrayOf(account),
             null, null, null
         )
+
         return if (cursor.moveToFirst()) {
-            User(
-                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
-                account = cursor.getString(cursor.getColumnIndexOrThrow(COL_ACCOUNT)),
-                password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)),
-                username = cursor.getString(cursor.getColumnIndexOrThrow(COL_USERNAME)),
-                avatar = cursor.getString(cursor.getColumnIndexOrThrow(COL_AVATAR)),
-                registerTime = cursor.getLong(cursor.getColumnIndexOrThrow(COL_REGISTER_TIME)),
-                status = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STATUS))
-            )
+            try {
+                User(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
+                    account = cursor.getString(cursor.getColumnIndexOrThrow(COL_ACCOUNT)).also {
+                        if (it.isBlank()) throw IllegalArgumentException("Account cannot be blank")
+                    },
+                    password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)).also {
+                        if (it.isBlank()) throw IllegalArgumentException("Password cannot be blank")
+                    },
+                    // 安全处理可能为null的字段
+                    username = cursor.getString(cursor.getColumnIndex(COL_USERNAME)) ?: "",
+                    avatar = cursor.getString(cursor.getColumnIndex(COL_AVATAR)) ?: "",
+                    registerTime = cursor.getLong(cursor.getColumnIndexOrThrow(COL_REGISTER_TIME)),
+                    status = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STATUS))
+                )
+            } catch (e: Exception) {
+                Log.e("UserDbHelper", "Error parsing user data", e)
+                null
+            }
         } else {
             null
-        }.also { cursor.close() }
+        }.also {
+            cursor.close()
+        }
     }
-
     // 更新其他用户信息
     fun updateUserInfo(user: User): Int {
         val db = writableDatabase

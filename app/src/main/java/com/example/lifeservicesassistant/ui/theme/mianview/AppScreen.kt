@@ -168,7 +168,7 @@ fun AppScreen() {
         ) {
             items(4) { index -> // Sample two categories (常用应用 and 查询应用)
                 val iconsForCategory =
-                    if (index == 0) 6 else if (index == 1) 9 else if (index == 2) 5 else 6 // 动态控制每个类别下的图标数量
+                    if (index == 0) 6 else if (index == 1) 11 else if (index == 2) 5 else 6 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 } else if (index == 1) {
@@ -179,6 +179,8 @@ fun AppScreen() {
                         "计分板",
                         "颜色转换器",
                         "随机数生成",
+                        "事项清单",
+                        "密码本",
                         "金额转大写",
                         "二维码制作",
                         "实时油价"
@@ -206,7 +208,9 @@ fun AppScreen() {
                         R.drawable.iron_suijishu,
                         R.drawable.iron_decision,
                         R.drawable.iron_decision,
-                        R.drawable.iron_decision
+                        R.drawable.iron_decision,
+                        R.drawable.iron_decision,
+                        R.drawable.iron_decision,
                     ) // 对应的图片资源ID
                 } else if (index == 2) {
                     listOf(R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
@@ -241,6 +245,8 @@ fun AppScreen() {
                         ScoreboardActivity::class.java,
                         ColorConverterActivity::class.java,
                         RandomNumberActivity::class.java,
+                        EventListActivity::class.java,
+                        PasswordManagementActivity::class.java,
                         MoneyConversionActivity::class.java,
                         QrCodeActivity::class.java,
                         OilPriceActivity::class.java
