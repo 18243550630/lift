@@ -100,4 +100,12 @@ object RetrofitClient {
             .build()
             .create(FlowerLanguageApiService::class.java)
     }
+    val judgmentQuestionApi: JudgmentQuestionApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(JudgmentQuestionApiService::class.java)
+    }
+
 }
