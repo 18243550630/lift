@@ -90,7 +90,7 @@ fun NewsListScreen(
                     }
                 ) {
                     Text(
-                        text = category.replaceFirstChar { it.uppercase() },
+                        text = category,
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     )
                 }

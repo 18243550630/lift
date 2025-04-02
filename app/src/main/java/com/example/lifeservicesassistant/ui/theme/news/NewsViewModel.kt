@@ -18,12 +18,22 @@ class NewsViewModel : ViewModel() {
     val selectedNews: State<News?> = _selectedNews
 
     private val supportedCategories = listOf("首页", "国内", "娱乐", "体育", "科技", "财经", "时尚")
+    private val categoryMap = mapOf(
+        "首页" to "top",
+        "国内" to "guonei",
+        "娱乐" to "yule",
+        "体育" to "tiyu",
+        "科技" to "keji",
+        "财经" to "caijing",
+        "时尚" to "shishang"
+    )
 
     fun loadNews(category: String = "首页") {
-        val validCategory = if (category in supportedCategories) category else "首页"
+        // 获取对应的API类别
+        val apiCategory = categoryMap[category] ?: "top"
         viewModelScope.launch {
             _newsState.value = NewsState.Loading
-            when (val result = repository.getTopHeadlines(validCategory)) {
+            when (val result = repository.getTopHeadlines(apiCategory)) {
                 is ResultWrapper.Success -> {
                     _newsState.value = NewsState.Success(result.data)
                 }
