@@ -206,23 +206,27 @@ fun AppScreen() {
                         R.drawable.iron_scoreboard,
                         R.drawable.iron_color,
                         R.drawable.iron_suijishu,
-                        R.drawable.iron_decision,
-                        R.drawable.iron_decision,
-                        R.drawable.iron_decision,
-                        R.drawable.iron_decision,
-                        R.drawable.iron_decision,
+                        R.drawable.iron_event,
+                        R.drawable.iron_password,
+                        R.drawable.iron_jine,
+                        R.drawable.iron_qrcode,
+                        R.drawable.iron_gas,
                     ) // 对应的图片资源ID
                 } else if (index == 2) {
-                    listOf(R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,R.drawable.iron_time,)
+                    listOf(R.drawable.iron_suku,
+                        R.drawable.iron_constellation,
+                        R.drawable.iron_resou,
+                        R.drawable.iron_demrir,
+                        R.drawable.iron_flowers,)
 
                 } else {
                     listOf(
-                        R.drawable.iron_time,
-                        R.drawable.iron_time,
-                        R.drawable.iron_time,
-                        R.drawable.iron_time,
-                        R.drawable.iron_time,
-                        R.drawable.iron_time,
+                        R.drawable.iron_knowledge,
+                        R.drawable.iron_word,
+                        R.drawable.iron_medcine,
+                        R.drawable.iron_luze,
+                        R.drawable.iron_computerkonw,
+                        R.drawable.iron_tuozhan,
                     )
 
                 }
