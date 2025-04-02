@@ -1,4 +1,4 @@
-// JudgmentQuestionScreen.kt
+// PoetryQuestionScreen.kt
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
 import androidx.compose.foundation.clickable
@@ -15,9 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.lifeservicesassistant.ui.theme.konwledge.medicine.FullScreenLoading
 
+
 @Composable
-fun JudgmentQuestionScreen(
-    viewModel: JudgmentQuestionViewModel,
+fun PoetryQuestionScreen(
+    viewModel: PoetryQuestionViewModel,
     onBackClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
@@ -30,14 +31,14 @@ fun JudgmentQuestionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("判断题") },
+                title = { Text("诗词问答") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, "返回")
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
+                    IconButton(onClick = { 
                         viewModel.fetchQuestion()
                     }) {
                         Icon(Icons.Default.Refresh, "刷新")
@@ -89,9 +90,145 @@ fun JudgmentQuestionScreen(
 }
 
 @Composable
+private fun QuestionContent(
+    question: PoetryQuestionItem,
+    viewModel: PoetryQuestionViewModel,
+    countdown: Int?
+) {
+    var selectedAnswer by remember { mutableStateOf<String?>(null) }
+    val isAnswerRevealed = selectedAnswer != null
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        // 问题
+        Text(
+            text = question.question,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold
+        )
+        
+        // 选项
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PoetryOption(
+                option = "A",
+                text = question.answer_a,
+                isSelected = selectedAnswer == "A",
+                isCorrect = question.answer == "A",
+                isAnswerRevealed = isAnswerRevealed,
+                onClick = { 
+                    selectedAnswer = "A"
+                    viewModel.selectAnswer("A")
+                }
+            )
+            
+            PoetryOption(
+                option = "B",
+                text = question.answer_b,
+                isSelected = selectedAnswer == "B",
+                isCorrect = question.answer == "B",
+                isAnswerRevealed = isAnswerRevealed,
+                onClick = { 
+                    selectedAnswer = "B"
+                    viewModel.selectAnswer("B")
+                }
+            )
+            
+            PoetryOption(
+                option = "C",
+                text = question.answer_c,
+                isSelected = selectedAnswer == "C",
+                isCorrect = question.answer == "C",
+                isAnswerRevealed = isAnswerRevealed,
+                onClick = { 
+                    selectedAnswer = "C"
+                    viewModel.selectAnswer("C")
+                }
+            )
+        }
+        
+        // 答案解析
+        if (isAnswerRevealed) {
+            AnalysisContent(
+                analysis = question.analytic,
+                countdown = countdown
+            )
+        }
+    }
+}
+
+@Composable
+private fun PoetryOption(
+    option: String,
+    text: String,
+    isSelected: Boolean,
+    isCorrect: Boolean,
+    isAnswerRevealed: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = when {
+        !isAnswerRevealed -> MaterialTheme.colors.surface
+        isCorrect -> Color(0xFF4CAF50).copy(alpha = 0.2f)
+        isSelected -> Color(0xFFF44336).copy(alpha = 0.2f)
+        else -> MaterialTheme.colors.surface
+    }
+    
+    val borderColor = when {
+        isSelected -> MaterialTheme.colors.primary
+        else -> MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+    }
+    
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = backgroundColor,
+        border = ButtonDefaults.outlinedBorder.copy(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = !isAnswerRevealed,
+                onClick = onClick
+            )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = isSelected,
+                onClick = null,
+                enabled = !isAnswerRevealed,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "$option. $text",
+                    style = MaterialTheme.typography.body1
+                )
+            }
+            
+            if (isAnswerRevealed) {
+                if (isCorrect) {
+                    Text(
+                        text = "✓ 正确答案",
+                        color = Color(0xFF4CAF50),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                } else if (isSelected) {
+                    Text(
+                        text = "✗ 错误答案",
+                        color = Color(0xFFF44336),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun AnalysisContent(
-    question: JudgmentQuestionItem,
-    selectedAnswer: Int?,
+    analysis: String,
     countdown: Int?
 ) {
     Card(
@@ -118,7 +255,7 @@ private fun AnalysisContent(
                 }
             }
             Text(
-                text = question.analyse,
+                text = analysis,
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -150,120 +287,5 @@ private fun Placeholder() {
         contentAlignment = Alignment.Center
     ) {
         Text("点击刷新获取题目")
-    }
-}
-
-@Composable
-private fun QuestionContent(
-    question: JudgmentQuestionItem,
-    viewModel: JudgmentQuestionViewModel,
-    countdown: Int?
-) {
-    var selectedAnswer by remember { mutableStateOf<Int?>(null) }
-    val isAnswerRevealed = selectedAnswer != null
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Text(
-            text = question.title,
-            style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.Bold
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            JudgmentOption(
-                text = "正确",
-                isSelected = selectedAnswer == 1,
-                isCorrect = question.answer == 1,
-                isAnswerRevealed = isAnswerRevealed,
-                onClick = {
-                    selectedAnswer = 1
-                    viewModel.selectAnswer(1)
-                }
-            )
-            JudgmentOption(
-                text = "错误",
-                isSelected = selectedAnswer == 0,
-                isCorrect = question.answer == 0,
-                isAnswerRevealed = isAnswerRevealed,
-                onClick = {
-                    selectedAnswer = 0
-                    viewModel.selectAnswer(0)
-                }
-            )
-        }
-        if (isAnswerRevealed) {
-            AnalysisContent(
-                question = question,
-                selectedAnswer = selectedAnswer,
-                countdown = countdown
-            )
-        }
-    }
-}
-
-@Composable
-private fun JudgmentOption(
-    text: String,
-    isSelected: Boolean,
-    isCorrect: Boolean,
-    isAnswerRevealed: Boolean,
-    onClick: () -> Unit
-) {
-    val backgroundColor = when {
-        !isAnswerRevealed -> MaterialTheme.colors.surface
-        isCorrect -> Color(0xFF4CAF50).copy(alpha = 0.2f)
-        isSelected -> Color(0xFFF44336).copy(alpha = 0.2f)
-        else -> MaterialTheme.colors.surface
-    }
-
-    val borderColor = when {
-        isSelected -> MaterialTheme.colors.primary
-        else -> MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-    }
-
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = backgroundColor,
-        border = ButtonDefaults.outlinedBorder.copy(),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = !isAnswerRevealed,
-                onClick = onClick
-            )
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = isSelected,
-                onClick = null,
-                enabled = !isAnswerRevealed,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.body1
-            )
-            if (isAnswerRevealed) {
-                Spacer(modifier = Modifier.weight(1f))
-                if (isCorrect) {
-                    Text(
-                        text = "✓ 正确答案",
-                        color = Color(0xFF4CAF50),
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                } else if (isSelected) {
-                    Text(
-                        text = "✗ 错误答案",
-                        color = Color(0xFFF44336),
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            }
-        }
     }
 }

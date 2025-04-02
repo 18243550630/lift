@@ -52,9 +52,9 @@ fun NewsListScreen(
     onNewsClick: (News) -> Unit
 ) {
     val newsState = viewModel.newsState.value
-    val categories = listOf("top", "guonei", "yule", "tiyu", "keji", "caijing", "shishang")
+    val categories = listOf("首页", "国内", "娱乐", "体育", "科技", "财经", "时尚")
 
-    var selectedCategory by remember { mutableStateOf("top") }
+    var selectedCategory by remember { mutableStateOf("首页") }
     var searchQuery by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) } // 用于SearchBar状态控制
 

@@ -17,10 +17,10 @@ class NewsViewModel : ViewModel() {
     private val _selectedNews = mutableStateOf<News?>(null)
     val selectedNews: State<News?> = _selectedNews
 
-    private val supportedCategories = listOf("top", "guonei", "yule", "tiyu", "keji", "caijing", "shishang")
+    private val supportedCategories = listOf("首页", "国内", "娱乐", "体育", "科技", "财经", "时尚")
 
-    fun loadNews(category: String = "top") {
-        val validCategory = if (category in supportedCategories) category else "top"
+    fun loadNews(category: String = "首页") {
+        val validCategory = if (category in supportedCategories) category else "首页"
         viewModelScope.launch {
             _newsState.value = NewsState.Loading
             when (val result = repository.getTopHeadlines(validCategory)) {

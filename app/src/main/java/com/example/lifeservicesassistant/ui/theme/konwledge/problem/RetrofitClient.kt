@@ -107,5 +107,12 @@ object RetrofitClient {
             .build()
             .create(JudgmentQuestionApiService::class.java)
     }
+    val poetryQuestionApi: PoetryQuestionApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(PoetryQuestionApiService::class.java)
+    }
 
 }

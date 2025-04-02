@@ -1,4 +1,4 @@
-// JudgmentQuestionViewModel.kt
+// PoetryQuestionViewModel.kt
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
 import android.app.Application
@@ -12,15 +12,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// JudgmentQuestionViewModel.kt
-class JudgmentQuestionViewModel(
+class PoetryQuestionViewModel(
     private val apiKey: String,
     private val application: Application
 ) : ViewModel() {
-    private val _state = MutableStateFlow(JudgmentQuestionState())
-    val state: StateFlow<JudgmentQuestionState> = _state
-
-    private var selectedAnswer: Int? = null
+    private val _state = MutableStateFlow(PoetryQuestionState())
+    val state: StateFlow<PoetryQuestionState> = _state
+    
+    private var selectedAnswer: String? = null
     private var isAnswerRevealed = false
     private var autoNextEnabled = false
     private var countdownJob: Job? = null
@@ -29,16 +28,16 @@ class JudgmentQuestionViewModel(
         countdownJob?.cancel()
         viewModelScope.launch {
             _state.update { it.copy(
-                isLoading = true,
+                isLoading = true, 
                 error = null,
                 countdown = null
             ) }
             selectedAnswer = null
             isAnswerRevealed = false
-
+            
             try {
-                val response = RetrofitClient.judgmentQuestionApi.getJudgmentQuestion(apiKey)
-
+                val response = RetrofitClient.poetryQuestionApi.getPoetryQuestion(apiKey)
+                
                 _state.update {
                     when {
                         response.code != 200 -> it.copy(
@@ -66,17 +65,17 @@ class JudgmentQuestionViewModel(
             }
         }
     }
-
-    fun selectAnswer(answer: Int) {
+    
+    fun selectAnswer(answer: String) {
         selectedAnswer = answer
         isAnswerRevealed = true
         _state.update { it.copy(showAnalysis = true) }
-
+        
         if (autoNextEnabled) {
             startCountdown()
         }
     }
-
+    
     fun setAutoNextEnabled(enabled: Boolean) {
         autoNextEnabled = enabled
         if (!enabled) {
@@ -84,7 +83,7 @@ class JudgmentQuestionViewModel(
             _state.update { it.copy(countdown = null) }
         }
     }
-
+    
     private fun startCountdown() {
         countdownJob?.cancel()
         countdownJob = viewModelScope.launch {
@@ -95,15 +94,15 @@ class JudgmentQuestionViewModel(
             fetchQuestion()
         }
     }
-
+    
     override fun onCleared() {
         countdownJob?.cancel()
         super.onCleared()
     }
 }
 
-data class JudgmentQuestionState(
-    val question: JudgmentQuestionItem? = null,
+data class PoetryQuestionState(
+    val question: PoetryQuestionItem? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
     val showAnalysis: Boolean = false,
