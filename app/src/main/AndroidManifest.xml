@@ -73,6 +73,7 @@
         <activity android:name=".ui.theme.play.FlowerLanguageActivity"/>
         <activity android:name=".ui.theme.konwledge.problem.JudgmentQuestionActivity"/>
         <activity android:name=".ui.theme.konwledge.problem.PoetryQuestionActivity"/>
+        <activity android:name=".ui.theme.konwledge.problem.PetActivity"/>
 
 
 

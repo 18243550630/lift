@@ -36,6 +36,7 @@ import com.example.lifeservicesassistant.ui.theme.konwledge.problem.ComputerTerm
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.FileExtensionActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.GarbageActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.JudgmentQuestionActivity
+import com.example.lifeservicesassistant.ui.theme.konwledge.problem.PetActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.PoetryQuestionActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.QAActivity
 import com.example.lifeservicesassistant.ui.theme.konwledge.problem.SynonymAntonymActivity
@@ -170,7 +171,7 @@ fun AppScreen() {
         ) {
             items(4) { index -> // Sample two categories (常用应用 and 查询应用)
                 val iconsForCategory =
-                    if (index == 0) 6 else if (index == 1) 11 else if (index == 2) 7 else 6 // 动态控制每个类别下的图标数量
+                    if (index == 0) 6 else if (index == 1) 11 else if (index == 2) 7 else 7 // 动态控制每个类别下的图标数量
                 val iconNames = if (index == 0) {
                     listOf("天气预报", "健康", "记账本", "记事本", "新闻", "日程管理") // 常用应用的图标名称
                 } else if (index == 1) {
@@ -191,7 +192,7 @@ fun AppScreen() {
                     listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦","花语箴言","一战到底","诗词大会")
 
                 } else {
-                    listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语","拓展名查询")
+                    listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语","拓展名查询","宠物百科")
 
                 }
 
@@ -231,6 +232,7 @@ fun AppScreen() {
                         R.drawable.iron_luze,
                         R.drawable.iron_computerkonw,
                         R.drawable.iron_tuozhan,
+                        R.drawable.iron_pet,
                     )
 
                 }
@@ -277,7 +279,8 @@ fun AppScreen() {
                         MedicineInstructionActivity::class.java,
                         GarbageActivity::class.java,
                         ComputerTermActivity::class.java,
-                        FileExtensionActivity::class.java
+                        FileExtensionActivity::class.java,
+                        PetActivity::class.java
                     )
                 }
 
