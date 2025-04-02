@@ -52,7 +52,7 @@ class NewsViewModel : ViewModel() {
                     _newsState.value = NewsState.Success(result.data)
                 }
                 is ResultWrapper.Failure -> {
-                    _newsState.value = NewsState.Error(result.message ?: "Unknown error")
+                    _newsState.value = NewsState.Error(result.message ?: "搜索失败")
                 }
             }
         }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,11 +23,6 @@ import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SearchBar
-
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsListScreen(
     viewModel: NewsViewModel,
@@ -55,27 +48,8 @@ fun NewsListScreen(
     val categories = listOf("首页", "国内", "娱乐", "体育", "科技", "财经", "时尚")
 
     var selectedCategory by remember { mutableStateOf("首页") }
-    var searchQuery by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) } // 用于SearchBar状态控制
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // 修正后的搜索栏 - 使用Material3的SearchBar
-        androidx.compose.material3.SearchBar(
-            query = searchQuery,
-            onQueryChange = { newQuery ->
-                searchQuery = newQuery
-            },
-            onSearch = {
-                viewModel.searchNews(searchQuery)
-                active = false
-            },
-            active = active,
-            onActiveChange = { active = it },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // 这里可以添加搜索建议内容
-        }
-
         // 分类标签
         ScrollableTabRow(
             selectedTabIndex = categories.indexOf(selectedCategory),
@@ -126,14 +100,11 @@ fun NewsListScreen(
         }
     }
 
-
-
-
-
     LaunchedEffect(Unit) {
         viewModel.loadNews(selectedCategory)
     }
 }
+
 @Composable
 fun NewsItem(news: News, onClick: () -> Unit) {
     Card(

@@ -13,7 +13,7 @@ interface NewsApi {
 
     @GET("index")
     suspend fun searchNews(
-        @Query("type") category: String = "top",
+        @Query("q") query: String,  // 添加搜索关键词参数
         @Query("key") apiKey: String = "be22a8974c6b62231d874cc19d81e1d6"
     ): Response<JuheApiResponse>
 }

@@ -188,7 +188,7 @@ fun AppScreen() {
                         "实时油价"
                     ) // 查询应用的图标名称
                 } else if (index == 2) {
-                    listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦","花语箴言","知识问答","诗词问答")
+                    listOf("数独游戏", "星座运势", "实时热搜榜", "周公解梦","花语箴言","一战到底","诗词大会")
 
                 } else {
                     listOf("知识百科", "词语近反义词", "药品知识", "垃圾分类常识","计算机术语","拓展名查询")
@@ -220,8 +220,8 @@ fun AppScreen() {
                         R.drawable.iron_resou,
                         R.drawable.iron_demrir,
                         R.drawable.iron_flowers,
-                        R.drawable.iron_flowers,
-                        R.drawable.iron_flowers,)
+                        R.drawable.iron_knowproblem,
+                        R.drawable.iron_peom,)
 
                 } else {
                     listOf(

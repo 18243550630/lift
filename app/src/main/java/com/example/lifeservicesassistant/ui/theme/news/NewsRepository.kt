@@ -26,7 +26,20 @@ class NewsRepository(
     }
 
     suspend fun searchNews(query: String): ResultWrapper<List<News>> {
-        // 聚合数据无搜索功能，简单返回头条作为替代
-        return getTopHeadlines("top")
+        return try {
+            if (!context.isNetworkAvailable()) {
+                return ResultWrapper.Failure("网络不可用")
+            }
+
+            val response = newsApi.searchNews(query)
+            if (response.isSuccessful) {
+                val newsList = response.body()?.result?.data?.map { it.toNews() } ?: emptyList()
+                ResultWrapper.Success(newsList)
+            } else {
+                ResultWrapper.Failure("搜索失败: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            ResultWrapper.Failure("搜索请求失败: ${e.message}")
+        }
     }
 }
