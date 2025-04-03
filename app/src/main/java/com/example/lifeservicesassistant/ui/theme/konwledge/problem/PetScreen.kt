@@ -1,6 +1,7 @@
 // PetScreen.kt
 package com.example.lifeservicesassistant.ui.theme.konwledge.problem
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +37,9 @@ fun PetScreen(
     var searchText by remember { mutableStateOf("") }
     var selectedPetType by remember { mutableStateOf<Int?>(null) }
     val scrollState = rememberScrollState()
-    
+
+
+
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleIndex ->
@@ -181,6 +184,7 @@ private fun PetList(
 
 @Composable
 private fun PetCard(item: PetItem) {
+    val testUrl = "https://via.placeholder.com/150"
     Card(
         elevation = 4.dp,
         modifier = Modifier.fillMaxWidth()
@@ -199,6 +203,7 @@ private fun PetCard(item: PetItem) {
                             .data(url)
                             .crossfade(true)
                             .build(),
+                      
                         contentDescription = item.name,
                         modifier = Modifier
                             .size(80.dp)
@@ -237,6 +242,9 @@ private fun PetCard(item: PetItem) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+            LaunchedEffect(item.coverURL) {
+                Log.d("ImageDebug", "Loading image: ${item.coverURL}")
+            }
 
             // 详细信息部分
             ExpandableSection(title = "性格特点", content = item.characters)

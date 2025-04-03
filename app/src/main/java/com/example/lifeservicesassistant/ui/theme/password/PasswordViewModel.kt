@@ -76,4 +76,16 @@ class PasswordViewModel(application: Application) : AndroidViewModel(application
             // Flow会自动更新列表
         }
     }
+
+    fun isPhoneMatch(inputPhone: String): Boolean {
+        val prefs = SecurityPrefs(getApplication())
+        return prefs.getPhoneNumber() == inputPhone
+    }
+
+    fun resetViewPassword(newPassword: String) {
+        val prefs = SecurityPrefs(getApplication())
+        prefs.saveViewPassword(newPassword)
+    }
+
+
 }

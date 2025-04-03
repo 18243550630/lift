@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -201,8 +203,10 @@ fun LoginScreen(
 ) {
     var enteredPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
-    var showResetOption by remember { mutableStateOf(false) }
-    var resetPhoneNumber by remember { mutableStateOf("") }
+    var errorCount by remember { mutableStateOf(0) }
+    var showResetDialog by remember { mutableStateOf(false) }
+    var resetPhoneInput by remember { mutableStateOf("") }
+    var resetError by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("请输入查看密码", style = MaterialTheme.typography.headlineSmall)
@@ -220,6 +224,12 @@ fun LoginScreen(
             Text(errorMessage, color = Color.Red)
         }
 
+        // 始终显示“忘记密码？”按钮
+        Spacer(modifier = Modifier.height(8.dp))
+        TextButton(onClick = { showResetDialog = true }) {
+            Text("忘记密码？")
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
@@ -227,9 +237,12 @@ fun LoginScreen(
                 if (enteredPassword == securityPrefs.getViewPassword()) {
                     onLoginSuccess()
                 } else {
+                    errorCount++
                     errorMessage = "密码错误"
-                    if (errorMessage.count { it == '误' } > 2) {
-                        showResetOption = true
+
+                    // 输错超过3次自动弹出
+                    if (errorCount >= 3) {
+                        showResetDialog = true
                     }
                 }
             },
@@ -237,34 +250,51 @@ fun LoginScreen(
         ) {
             Text("确认")
         }
+    }
 
-        if (showResetOption) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("忘记密码？", style = MaterialTheme.typography.bodySmall)
-
-            OutlinedTextField(
-                value = resetPhoneNumber,
-                onValueChange = { resetPhoneNumber = it },
-                label = { Text("输入注册手机号") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(
-                onClick = {
-                    if (resetPhoneNumber == securityPrefs.getPhoneNumber()) {
+    // 验证手机号弹窗（手动点 or 自动触发都走这里）
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            title = { Text("重置查看密码") },
+            text = {
+                Column {
+                    Text("请输入初次设置的手机号")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = resetPhoneInput,
+                        onValueChange = { resetPhoneInput = it },
+                        label = { Text("手机号") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (resetError.isNotEmpty()) {
+                        Text(resetError, color = Color.Red)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (resetPhoneInput == securityPrefs.getPhoneNumber()) {
                         securityPrefs.saveViewPassword("")
+                        showResetDialog = false
                         onResetToSetup()
                     } else {
-                        errorMessage = "手机号不匹配"
+                        resetError = "手机号不匹配"
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("重置密码")
+                }) {
+                    Text("验证")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text("取消")
+                }
             }
-        }
+        )
     }
 }
+
+
 
 sealed class AppState {
     object Loading : AppState()

@@ -22,4 +22,6 @@ class SecurityPrefs(context: Context) {
 
     fun isFirstTime(): Boolean = 
         sharedPref.getString("view_password", null) == null
+
+
 }
