@@ -53,5 +53,7 @@ data class News(
     val urlToImage: String?,
     val source: String,
     val url: String,
-    val category: String = "top"
+    val category: String = "top",
+    val keywords: List<String> = emptyList(),
+    val embedding: List<Float> = emptyList() // 用于深度学习模型
 ) : Parcelable

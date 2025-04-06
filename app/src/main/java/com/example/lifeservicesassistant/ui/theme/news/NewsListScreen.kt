@@ -2,33 +2,13 @@ package com.example.lifeservicesassistant.ui.theme.news
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,12 +25,11 @@ fun NewsListScreen(
     onNewsClick: (News) -> Unit
 ) {
     val newsState = viewModel.newsState.value
-    val categories = listOf("首页", "国内", "娱乐", "体育", "科技", "财经", "时尚")
-
+    val categories = listOf("首页", "推荐", "国内", "娱乐", "体育", "科技", "财经", "时尚")
     var selectedCategory by remember { mutableStateOf("首页") }
+    val listState = rememberLazyListState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // 分类标签
         ScrollableTabRow(
             selectedTabIndex = categories.indexOf(selectedCategory),
             edgePadding = 8.dp
@@ -71,24 +50,62 @@ fun NewsListScreen(
             }
         }
 
-        // 新闻列表
         when (newsState) {
             is NewsViewModel.NewsState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
+
             is NewsViewModel.NewsState.Success -> {
-                LazyColumn {
-                    items(newsState.news) { news ->
-                        NewsItem(news = news, onClick = { onNewsClick(news) })
-                        Divider()
+                LazyColumn(state = listState) {
+                    // 推荐 Tab 显示推荐内容
+                    if (selectedCategory == "为你推荐") {
+                        if (newsState.news.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("暂无推荐内容，请多阅读你喜欢的新闻~")
+                                }
+                            }
+                        } else {
+                            items(newsState.news) { news ->
+                                NewsItem(news = news, onClick = { onNewsClick(news) })
+                                Divider()
+                            }
+                        }
+                    } else {
+                        items(newsState.news) { news ->
+                            NewsItem(news = news, onClick = { onNewsClick(news) })
+                            Divider()
+                        }
+                    }
+                }
+
+                // 监听推荐滑动加载更多
+                val shouldLoadMore = remember {
+                    derivedStateOf {
+                        val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        lastVisible >= listState.layoutInfo.totalItemsCount - 3
+                    }
+                }
+
+                LaunchedEffect(shouldLoadMore.value, selectedCategory) {
+                    if (selectedCategory == "推荐" && shouldLoadMore.value) {
+                        viewModel.loadMoreRecommendations()
                     }
                 }
             }
+
             is NewsViewModel.NewsState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red)
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text("Error: ${newsState.message}", color = MaterialTheme.colors.error)
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = { viewModel.loadNews(selectedCategory) }) {
