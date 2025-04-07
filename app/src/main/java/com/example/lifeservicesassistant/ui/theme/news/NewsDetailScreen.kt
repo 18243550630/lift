@@ -1,5 +1,6 @@
 package com.example.lifeservicesassistant.ui.theme.news
 
+import android.content.Context
 import android.content.Intent
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -10,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -110,4 +112,66 @@ fun NewsDetailScreen(navController: NavController) {
             }
         )
     }
+}
+@Composable
+fun MultiSelectFolderDialog(
+    context: Context,
+    onDismiss: () -> Unit,
+    onConfirm: (List<String>) -> Unit
+) {
+    val folders = remember { NewsStorage.getFavoriteFolders(context).keys.toList() }
+    val selected = remember { mutableStateListOf<String>().apply { if (folders.isNotEmpty()) add(folders[0]) } }
+    var newFolderName by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("选择收藏夹 (可多选)") },
+        text = {
+            Column {
+                folders.forEach { folder ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (selected.contains(folder)) selected.remove(folder)
+                                else selected.add(folder)
+                            }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Checkbox(
+                            checked = selected.contains(folder),
+                            onCheckedChange = {
+                                if (it) selected.add(folder) else selected.remove(folder)
+                            }
+                        )
+                        Text(folder)
+                    }
+                }
+                OutlinedTextField(
+                    value = newFolderName,
+                    onValueChange = { newFolderName = it },
+                    label = { Text("新建收藏夹（可选）") },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (newFolderName.isNotBlank() && !folders.contains(newFolderName)) {
+                    NewsStorage.createFavoriteFolder(context, newFolderName)
+                    selected.add(newFolderName)
+                }
+                onConfirm(selected.toList())
+                onDismiss()
+            }) {
+                Text("确认")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
 }

@@ -87,6 +87,7 @@ sealed class BottomNavItem(val label: String, val route: String, val icon: andro
 @Composable
 fun BottomNavGraph(navController: NavHostController, viewModel: NewsViewModel) {
     val context = LocalContext.current
+
     NavHost(navController, startDestination = BottomNavItem.News.route) {
         composable(BottomNavItem.News.route) {
             NewsListScreen(viewModel = viewModel, onNewsClick = { news ->
@@ -98,45 +99,12 @@ fun BottomNavGraph(navController: NavHostController, viewModel: NewsViewModel) {
             NewsDetailScreen(navController = navController)
         }
         composable(BottomNavItem.Favorites.route) {
-            FavoriteFolderScreen(onFolderClick = { folderName ->
-                navController.navigate("folderDetail/$folderName")
-            })
-        }
-        composable("folderDetail/{folderName}") { backStackEntry ->
-            val folderName = backStackEntry.arguments?.getString("folderName") ?: ""
-            val newsList = remember { mutableStateListOf<News>().apply { addAll(NewsStorage.getFavoritesInFolder(context, folderName)) } }
-
-            Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(onClick = {
-                        newsList.clear()
-                        NewsStorage.saveFavoriteFolders(context, NewsStorage.getFavoriteFolders(context).apply {
-                            put(folderName, mutableListOf())
-                        })
-                        Toast.makeText(context, "已清空该收藏夹", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Text("清空")
-                    }
+            FavoriteFolderScreen(
+                navController = navController,
+                onFolderClick = { folderName ->
+                    navController.navigate("folderDetail/$folderName")
                 }
-                NewsList(
-                    newsList = newsList,
-                    title = folderName,
-                    onItemClick = { news ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("selectedNews", news)
-                        navController.navigate("newsDetail")
-                    },
-                    onDeleteClick = { news ->
-                        newsList.remove(news)
-                        NewsStorage.removeFavoriteFromFolder(context, folderName, news.id)
-                        Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show()
-                    }
-                )
-            }
+            )
         }
         composable(BottomNavItem.History.route) {
             val history = remember { mutableStateListOf<News>().apply { addAll(NewsStorage.getHistory(context).reversed()) } }
@@ -170,6 +138,20 @@ fun BottomNavGraph(navController: NavHostController, viewModel: NewsViewModel) {
                 )
             }
         }
+
+        // ✅ 收藏夹详情页路由
+        composable("folderDetail/{folderName}") { backStackEntry ->
+            val folderName = backStackEntry.arguments?.getString("folderName") ?: return@composable
+            FavoriteFolderDetailScreen(
+                folderName = folderName,
+                onBack = { navController.popBackStack() },
+                onNewsClick = { news ->
+                    navController.currentBackStackEntry?.savedStateHandle?.set("selectedNews", news)
+                    navController.navigate("newsDetail")
+                }
+            )
+        }
+
     }
 }
 
