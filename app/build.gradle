@@ -28,7 +28,13 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
-
+    kotlin {
+        sourceSets.all {
+            languageSettings {
+                optIn("kotlin.experimental.ExperimentalTypeInference")
+            }
+        }
+    }
 
     buildTypes {
         release {

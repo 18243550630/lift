@@ -6,6 +6,7 @@ import android.content.Context
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.room.Room
 
 class SunnyWeatherApplication : Application() {
     companion object{
@@ -29,7 +30,6 @@ class SunnyWeatherApplication : Application() {
 
 
 }
-
 
 fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
